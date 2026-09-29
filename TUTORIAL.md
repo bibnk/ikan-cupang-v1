@@ -2,7 +2,7 @@
 
 Tutorial lengkap install, deploy, dan operasi aplikasi **IMAP Checker** di VPS Ubuntu via GitHub.
 
-**Repo:** https://github.com/bibnk/ikan-cupang
+**Repo:** https://github.com/bibnk/ikan-cupang-v1 (snapshot v1)
 
 ---
 
@@ -30,7 +30,7 @@ ssh root@IP_VPS_KAMU
 ```bash
 apt install -y git
 cd ~
-git clone https://github.com/bibnk/ikan-cupang.git imap-checker-vps
+git clone https://github.com/bibnk/ikan-cupang-v1.git imap-checker-vps
 cd imap-checker-vps
 ```
 
@@ -379,7 +379,7 @@ Beberapa penyebab umum:
 ssh root@IP_VPS
 apt install -y git
 cd ~
-git clone https://github.com/bibnk/ikan-cupang.git imap-checker-vps
+git clone https://github.com/bibnk/ikan-cupang-v1.git imap-checker-vps
 cd imap-checker-vps
 chmod +x setup.sh
 ./setup.sh

@@ -1,8 +1,11 @@
-# Mail Console — VPS Deployment (Ubuntu 24.04)
+# Mail Console — VPS Deployment (Ubuntu 24.04) [v1]
+
+Snapshot v1 — frozen at commit `5ce7bae` (DNS pre-resolve + cache, shorter timeout, skip port 143).
+Versi terbaru ada di [bibnk/ikan-cupang](https://github.com/bibnk/ikan-cupang) (repo utama). Repo ini adalah backup statis v1, **jangan di-update**.
 
 Web-based mail utility dengan admin panel, dedup, multi-thread (1-1000), dan filter subject yang konfigurabel. Homepage publik hanya menampilkan "Hello World"; seluruh fungsi tool disembunyikan di balik URL rahasia.
 
-**Repo:** https://github.com/bibnk/ikan-cupang
+**Repo:** https://github.com/bibnk/ikan-cupang-v1
 **Tutorial lengkap:** lihat [TUTORIAL.md](./TUTORIAL.md)
 
 ---
@@ -15,7 +18,7 @@ Web-based mail utility dengan admin panel, dedup, multi-thread (1-1000), dan fil
 ssh root@IP_VPS_KAMU
 apt install -y git
 cd ~
-git clone https://github.com/bibnk/ikan-cupang.git imap-checker-vps
+git clone https://github.com/bibnk/ikan-cupang-v1.git imap-checker-vps
 cd imap-checker-vps
 chmod +x setup.sh
 ./setup.sh
@@ -33,6 +36,8 @@ segmen yang diinginkan ke `/opt/imap-checker/.secret_path` lalu restart service.
 ---
 
 ## 🔄 Update via Git Pull
+
+> Repo ini snapshot v1. Untuk update ke versi terbaru, gunakan repo utama: `bibnk/ikan-cupang`.
 
 ```bash
 cd ~/imap-checker-vps && git pull
