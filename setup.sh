@@ -48,15 +48,27 @@ sudo $VENV_DIR/bin/pip install -r $APP_DIR/requirements.txt
 # Create jobs directory
 sudo mkdir -p $APP_DIR/jobs
 
-# Seed empty IMAP config DB so first run never crashes with
-# "[Errno 2] No such file or directory: imap_config.json".
-# The real data is gitignored, so a fresh clone has none — create both the
-# app-dir file (fallback) and the central /opt/pmj/imap DB (production path).
-echo "  Seeding empty IMAP config DB..."
+# Seed IMAP config DB:
+# If app repo bundles imap_config.json or skip_domains.json, seed them into /opt/pmj/imap.
+# Otherwise create minimal valid JSON to avoid FileNotFoundError.
+echo "  Seeding IMAP config DB..."
 CENTRAL_IMAP_DIR="/opt/pmj/imap"
 sudo mkdir -p "$CENTRAL_IMAP_DIR"
+
+if [ -s "$APP_DIR/imap_config.json" ]; then
+    echo "  Seeding /opt/pmj/imap/imap_config.json from app repository..."
+    sudo cp "$APP_DIR/imap_config.json" "$CENTRAL_IMAP_DIR/imap_config.json"
+elif [ ! -f "$CENTRAL_IMAP_DIR/imap_config.json" ]; then
+    printf '{}\n' | sudo tee "$CENTRAL_IMAP_DIR/imap_config.json" >/dev/null
+fi
+
+if [ -s "$APP_DIR/skip_domains.json" ]; then
+    echo "  Seeding /opt/pmj/imap/skip_domains.json from app repository..."
+    sudo cp "$APP_DIR/skip_domains.json" "$CENTRAL_IMAP_DIR/skip_domains.json"
+fi
+
 for f in "$APP_DIR/imap_config.json" "$APP_DIR/imap_success.json" \
-         "$CENTRAL_IMAP_DIR/imap_config.json" "$CENTRAL_IMAP_DIR/imap_success.json"; do
+         "$CENTRAL_IMAP_DIR/imap_success.json"; do
     if [ ! -f "$f" ]; then
         printf '{}\n' | sudo tee "$f" >/dev/null
     fi

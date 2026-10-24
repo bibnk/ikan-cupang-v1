@@ -20,12 +20,28 @@ if not os.path.isdir(IMAP_DB_DIR):
 IMAP_CONFIG_PATH = os.path.join(IMAP_DB_DIR, "imap_config.json")
 IMAP_SUCCESS_PATH = os.path.join(IMAP_DB_DIR, "imap_success.json")
 
-# Load config
+# Load config: prioritaskan central database, fallback ke local repo jika kosong
+DEFAULT_IMAP_CONFIG = {}
 if os.path.exists(IMAP_CONFIG_PATH):
-    with open(IMAP_CONFIG_PATH, "r", encoding="utf-8") as _f:
-        DEFAULT_IMAP_CONFIG = json.load(_f)
-else:
-    DEFAULT_IMAP_CONFIG = {}
+    try:
+        with open(IMAP_CONFIG_PATH, "r", encoding="utf-8") as _f:
+            DEFAULT_IMAP_CONFIG = json.load(_f)
+    except Exception:
+        DEFAULT_IMAP_CONFIG = {}
+
+_local_cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imap_config.json")
+if not DEFAULT_IMAP_CONFIG and os.path.exists(_local_cfg_path):
+    try:
+        with open(_local_cfg_path, "r", encoding="utf-8") as _f:
+            DEFAULT_IMAP_CONFIG = json.load(_f)
+        if DEFAULT_IMAP_CONFIG and os.path.isdir(IMAP_DB_DIR) and IMAP_CONFIG_PATH != _local_cfg_path:
+            try:
+                with open(IMAP_CONFIG_PATH, "w", encoding="utf-8") as _f:
+                    json.dump(DEFAULT_IMAP_CONFIG, _f, indent=2)
+            except Exception:
+                pass
+    except Exception:
+        pass
 
 # Country-code TLDs yang punya 2 bagian (ne.jp, co.uk, com.br, dll)
 _CC_TLDS = {

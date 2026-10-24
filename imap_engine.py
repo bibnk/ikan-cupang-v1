@@ -40,7 +40,19 @@ SKIP_DOMAINS_PATH = os.path.join(
 SKIP_DOMAINS_LOCK_PATH = SKIP_DOMAINS_PATH + ".lock"
 
 # First-run seed only. NOT referenced from _worker (Requirement 5.2).
-_DEFAULT_SKIP_SET = ["hotmail", "live", "msn", "outlook", "yahoo", "interia", "poczta.fm"]
+_DEFAULT_SKIP_SET = [
+    "hotmail",
+    "live",
+    "msn",
+    "outlook",
+    "yahoo",
+    "gmail",
+    "googlemail",
+    "zoho",
+    "icloud",
+    "interia",
+    "poczta.fm",
+]
 
 # Whitespace detector for skip-entry validation (Requirement 9.3).
 _WHITESPACE_RE = re.compile(r"\s")
@@ -1104,16 +1116,26 @@ class ImapChecker:
                 mail_conn.select("INBOX")
                 email_ids = set()
                 subject_matched_ids = set()  # bytes UIDs from SUBJECT branch — consumed by post-fetch gate
-                # Search by sender
+                # Search by sender (with fallback for proprietary servers like Aliyun)
                 for sender in self.target_senders:
                     criteria = f'(SINCE "{self.search_since_date}" FROM "{_escape_imap_string(sender)}")'
-                    status, msgs = mail_conn.search(None, criteria)
+                    try:
+                        status, msgs = mail_conn.search(None, criteria)
+                    except Exception:
+                        try:
+                            criteria = f'(SINCE "{self.search_since_date}" HEADER FROM "{_escape_imap_string(sender)}")'
+                            status, msgs = mail_conn.search(None, criteria)
+                        except Exception:
+                            status, msgs = "ERROR", []
                     if status == "OK" and msgs and msgs[0]:
                         email_ids.update(msgs[0].split())
                 # Search by keyword (SUBJECT)
                 for kw in self.keywords:
                     criteria = f'(SINCE "{self.search_since_date}" SUBJECT "{_escape_imap_string(kw)}")'
-                    status, msgs = mail_conn.search(None, criteria)
+                    try:
+                        status, msgs = mail_conn.search(None, criteria)
+                    except Exception:
+                        status, msgs = "ERROR", []
                     if status == "OK" and msgs and msgs[0]:
                         ids = msgs[0].split()
                         email_ids.update(ids)
