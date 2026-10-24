@@ -121,6 +121,26 @@ def cleanup_expired_jobs():
             shutil.rmtree(job_dir, ignore_errors=True)
 
 
+def save_job_meta(job_id, jdata):
+    """Persist job metadata to disk for crash recovery and history."""
+    try:
+        job_dir = os.path.join(JOBS_DIR, job_id)
+        os.makedirs(job_dir, exist_ok=True)
+        meta_file = os.path.join(job_dir, "meta.json")
+        data = {
+            "job_id": job_id,
+            "created_at": jdata["created_at"].strftime("%Y-%m-%d %H:%M:%S") if isinstance(jdata.get("created_at"), datetime) else str(jdata.get("created_at")),
+            "expires_at": jdata["expires_at"].strftime("%Y-%m-%d %H:%M:%S") if isinstance(jdata.get("expires_at"), datetime) else str(jdata.get("expires_at")),
+            "owner": jdata.get("owner", ""),
+            "owner_label": jdata.get("owner_label", "unknown"),
+            "meta": jdata.get("meta", {}),
+        }
+        with open(meta_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    except Exception:
+        pass
+
+
 # ---- Login ----
 
 @app.route("/login", methods=["GET", "POST"])
@@ -342,21 +362,25 @@ def start_check():
         proxy_list=proxy_list,
     )
 
-    jobs[job_id] = {
+    meta = {
+        "job_type": "check",
+        "total_accounts": len(accounts),
+        "total_senders": len(senders),
+        "total_keywords": len(keywords),
+        "total_proxies": len(proxy_list),
+        "senders_text": senders_text[:100],
+        "keywords_text": keywords_text[:100],
+    }
+    jdata = {
         "checker": checker,
         "created_at": now,
         "expires_at": now + timedelta(days=DEFAULT_EXPIRY_DAYS),
         "owner": session.get("code_hash", ""),
         "owner_label": session.get("user_label", "unknown"),
-        "meta": {
-            "total_accounts": len(accounts),
-            "total_senders": len(senders),
-            "total_keywords": len(keywords),
-            "total_proxies": len(proxy_list),
-            "senders_text": senders_text[:100],
-            "keywords_text": keywords_text[:100],
-        },
+        "meta": meta,
     }
+    jobs[job_id] = jdata
+    save_job_meta(job_id, jdata)
     checker.run()
 
     return jsonify({
@@ -383,13 +407,39 @@ def stop_check(job_id):
 @login_required
 def job_status(job_id):
     jdata = jobs.get(job_id)
-    if not jdata:
+    if not jdata and os.path.isdir(os.path.join(JOBS_DIR, job_id)):
+        results_dir = os.path.join(JOBS_DIR, job_id)
+        meta_path = os.path.join(results_dir, "meta.json")
+        mdata = {}
+        if os.path.exists(meta_path):
+            try:
+                mdata = json.load(open(meta_path, "r", encoding="utf-8"))
+            except Exception:
+                pass
+        meta = mdata.get("meta", {})
+        def generate_static():
+            prog = {
+                "status": "done",
+                "job_id": job_id,
+                "job_type": meta.get("job_type", "check"),
+                "parent_job_id": meta.get("parent_job_id"),
+                "percentage": 100,
+                "checked": meta.get("total_accounts", 0),
+                "total": meta.get("total_accounts", 0),
+            }
+            yield f"data: {json.dumps(prog)}\n\n"
+        return Response(generate_static(), mimetype="text/event-stream")
+    elif not jdata:
         return jsonify({"error": "Job not found"}), 404
     checker = jdata["checker"]
+    meta = jdata.get("meta", {})
 
     def generate():
         while True:
             progress = checker.get_progress()
+            progress["job_id"] = job_id
+            progress["job_type"] = meta.get("job_type", "check")
+            progress["parent_job_id"] = meta.get("parent_job_id")
             yield f"data: {json.dumps(progress)}\n\n"
             if progress["status"] in ("done", "stopped"):
                 break
@@ -536,22 +586,27 @@ def resolve_unreg_job(job_id):
         proxy_list=proxy_list,
     )
 
-    jobs[new_job_id] = {
+    new_meta = {
+        "job_type": "resolve_unreg",
+        "parent_job_id": job_id,
+        "resolved_domains": len(new_configs),
+        "total_accounts": len(checking_accounts),
+        "total_senders": len(target_senders),
+        "total_keywords": len(keywords),
+        "total_proxies": len(proxy_list),
+        "senders_text": getattr(parent_checker, "senders_text", "")[:100],
+        "keywords_text": getattr(parent_checker, "keywords_text", "")[:100],
+    }
+    new_jdata = {
         "checker": new_checker,
         "created_at": now,
         "expires_at": now + timedelta(days=DEFAULT_EXPIRY_DAYS),
-        "owner": jdata.get("owner", ""),
-        "owner_label": jdata.get("owner_label", "unknown"),
-        "meta": {
-            "total_accounts": len(checking_accounts),
-            "total_senders": len(target_senders),
-            "total_keywords": len(keywords),
-            "total_proxies": len(proxy_list),
-            "parent_job_id": job_id,
-            "senders_text": getattr(parent_checker, "senders_text", "")[:100],
-            "keywords_text": getattr(parent_checker, "keywords_text", "")[:100],
-        },
+        "owner": jdata.get("owner", session.get("code_hash", "")),
+        "owner_label": jdata.get("owner_label", session.get("user_label", "unknown")),
+        "meta": new_meta,
     }
+    jobs[new_job_id] = new_jdata
+    save_job_meta(new_job_id, new_jdata)
     new_checker.run()
 
     return jsonify({
@@ -735,30 +790,107 @@ def list_jobs():
     user_hash = session.get("code_hash", "")
     is_admin = session.get("is_admin", False)
     result = []
+    seen = set()
+
     for jid, jdata in jobs.items():
+        seen.add(jid)
         # Only show own jobs (admin sees all)
         if not is_admin and jdata.get("owner") != user_hash:
             continue
-        checker = jdata["checker"]
-        progress = checker.get_progress()
+        checker = jdata.get("checker")
+        progress = checker.get_progress() if (checker and hasattr(checker, "get_progress")) else {}
+        meta = jdata.get("meta", {})
+        created_at_val = jdata.get("created_at")
+        expires_at_val = jdata.get("expires_at")
+        c_str = created_at_val.strftime("%Y-%m-%d %H:%M:%S") if isinstance(created_at_val, datetime) else str(created_at_val or "")
+        e_str = expires_at_val.strftime("%Y-%m-%d %H:%M:%S") if isinstance(expires_at_val, datetime) else str(expires_at_val or "")
+
         entry = {
             "job_id": jid,
+            "job_type": meta.get("job_type", "check"),
+            "parent_job_id": meta.get("parent_job_id"),
             "status": progress.get("status", "unknown"),
             "percentage": progress.get("percentage", 0),
             "checked": progress.get("checked", 0),
-            "total": progress.get("total", 0),
+            "total": progress.get("total", meta.get("total_accounts", 0)),
             "live": progress.get("live", 0),
             "die": progress.get("die", 0),
             "noemail": progress.get("noemail", 0),
             "unreg": progress.get("unreg", 0),
             "skipped": progress.get("skipped", 0),
-            "created_at": jdata["created_at"].strftime("%Y-%m-%d %H:%M:%S"),
-            "expires_at": jdata["expires_at"].strftime("%Y-%m-%d %H:%M:%S"),
-            "meta": jdata.get("meta", {}),
+            "created_at": c_str,
+            "expires_at": e_str,
+            "meta": meta,
         }
         if is_admin:
             entry["owner_label"] = jdata.get("owner_label", "unknown")
         result.append(entry)
+
+    # Disk scan for persisted jobs
+    if os.path.isdir(JOBS_DIR):
+        for jid in os.listdir(JOBS_DIR):
+            if jid in seen:
+                continue
+            jdir = os.path.join(JOBS_DIR, jid)
+            if not os.path.isdir(jdir):
+                continue
+            meta_path = os.path.join(jdir, "meta.json")
+            mdata = {}
+            if os.path.exists(meta_path):
+                try:
+                    with open(meta_path, "r", encoding="utf-8") as f:
+                        mdata = json.load(f)
+                except Exception:
+                    pass
+            if not is_admin and mdata.get("owner") and mdata.get("owner") != user_hash:
+                continue
+
+            def _lines(name):
+                p = os.path.join(jdir, name)
+                if os.path.exists(p):
+                    try:
+                        with open(p, "rb") as f:
+                            return sum(1 for _ in f)
+                    except Exception:
+                        return 0
+                return 0
+
+            live_c = _lines("live.txt")
+            die_c = _lines("die.txt")
+            noemail_c = _lines("noemail.txt")
+            unreg_c = _lines("unreg_accounts.txt") or _lines("unreg.txt")
+            skipped_c = _lines("domain_skipped.txt")
+            meta = mdata.get("meta", {})
+            total_acc = meta.get("total_accounts", live_c + die_c + noemail_c + unreg_c + skipped_c)
+            checked = live_c + die_c + noemail_c + unreg_c + skipped_c
+            pct = round((checked / total_acc * 100), 1) if total_acc > 0 else 100
+
+            try:
+                c_time = datetime.fromtimestamp(os.path.getctime(jdir)).strftime("%Y-%m-%d %H:%M:%S")
+            except Exception:
+                c_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            entry = {
+                "job_id": jid,
+                "job_type": meta.get("job_type", "check"),
+                "parent_job_id": meta.get("parent_job_id"),
+                "status": "done",
+                "percentage": min(100, pct),
+                "checked": checked,
+                "total": total_acc,
+                "live": live_c,
+                "die": die_c,
+                "noemail": noemail_c,
+                "unreg": unreg_c,
+                "skipped": skipped_c,
+                "created_at": mdata.get("created_at", c_time),
+                "expires_at": mdata.get("expires_at", c_time),
+                "meta": meta,
+            }
+            if is_admin:
+                entry["owner_label"] = mdata.get("owner_label", "unknown")
+            result.append(entry)
+
     result.sort(key=lambda x: x["created_at"], reverse=True)
     return jsonify(result)
 

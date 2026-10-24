@@ -193,9 +193,14 @@
 
     // ---- On page load: reconnect if job exists ----
     (function reconnect() {
-        var savedJobId = loadJobId();
+        var params = new URLSearchParams(window.location.search);
+        var urlJobId = params.get("job_id");
+        var savedJobId = urlJobId || loadJobId();
         if (!savedJobId) return;
         currentJobId = savedJobId;
+        if (urlJobId) {
+            saveJobId(urlJobId);
+        }
         renderedLiveCount = 0;
         showProgress();
         listenProgress(savedJobId);
@@ -344,6 +349,16 @@
         statDie.textContent = d.die;
         statUnreg.textContent = d.unreg;
         statSkipped.textContent = d.skipped;
+
+        var jid = d.job_id || currentJobId;
+        var badge = document.getElementById("job-title-badge");
+        if (badge && jid) {
+            if (d.job_type === "resolve_unreg") {
+                badge.innerHTML = '<span class="badge-resolve">⚡ Resolve Unreg #' + jid + (d.parent_job_id ? ' (Parent: #' + d.parent_job_id + ')' : '') + '</span>';
+            } else {
+                badge.innerHTML = '<span class="badge-normal">Job #' + jid + '</span>';
+            }
+        }
 
         if (d.status === "running") {
             stopBtn.classList.remove("hidden");
@@ -1173,22 +1188,20 @@
             .then(function (res) { return res.json(); })
             .then(function (res) {
                 if (res.success && res.new_job_id) {
+                    var newTabUrl = APP_BASE + "/?job_id=" + res.new_job_id;
+                    try {
+                        window.open(newTabUrl, "_blank");
+                    } catch (e) {}
+
                     statusBox.style.color = "#22c55e";
-                    statusBox.textContent = "✅ Berhasil resolve " + res.resolved_domains + " domain! Memulai pengecekan " + res.checking_accounts + " akun unreg...";
+                    statusBox.innerHTML = "✅ Berhasil resolve " + res.resolved_domains + " domain!<br>" +
+                        "Pengecekan " + res.checking_accounts + " akun unreg dibuka di <strong>tab baru</strong>.<br><br>" +
+                        '<a href="' + newTabUrl + '" target="_blank" style="display:inline-block;padding:8px 16px;background:#22c55e;color:#0f172a;font-weight:700;border-radius:6px;text-decoration:none;">🚀 Buka Tab Pengecekan</a>';
+
                     setTimeout(function () {
-                        closeModal();
-                        currentJobId = res.new_job_id;
-                        saveJobId(res.new_job_id);
-                        progressBar.style.width = "0%";
-                        progressPct.textContent = "0%";
-                        progressDetail.textContent = "0 / " + res.checking_accounts + " akun";
-                        renderedLiveCount = 0;
-                        liveList.innerHTML = "";
-                        liveSection.classList.add("hidden");
-                        liveCounter.textContent = "0";
-                        showProgress();
-                        listenProgress(res.new_job_id);
-                    }, 1200);
+                        modal.remove();
+                        document.body.style.overflow = "";
+                    }, 3500);
                 } else {
                     statusBox.style.color = "#ef4444";
                     statusBox.textContent = "❌ " + (res.message || res.error || "Gagal me-resolve domain unreg");

@@ -1625,6 +1625,90 @@ input[type="number"] {
     border-left: 3px solid var(--color-die);
 }
 
+.hist-card.hist-resolve-unreg {
+    border-color: rgba(168, 85, 247, 0.45);
+    background: linear-gradient(180deg, rgba(168, 85, 247, 0.05) 0%, var(--bg-card) 100%);
+    box-shadow: 0 4px 20px -8px rgba(168, 85, 247, 0.2);
+}
+
+.hist-card.hist-resolve-unreg.hist-running {
+    border-left: 4px solid #c084fc;
+}
+
+.hist-type-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.3px;
+}
+
+.hist-type-badge.resolve {
+    background: rgba(168, 85, 247, 0.18);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.hist-type-badge.normal {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.hist-parent-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px dashed var(--border-color);
+}
+
+.hist-open-btn {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #818cf8;
+}
+
+.hist-open-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+    color: #ffffff;
+    border-color: var(--accent-primary);
+}
+
+.job-header-badge {
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.job-header-badge .badge-resolve {
+    background: rgba(168, 85, 247, 0.2);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.45);
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
+.job-header-badge .badge-normal {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 3px 10px;
+    border-radius: 12px;
+}
+
 .hist-header {
     display: flex;
     align-items: center;

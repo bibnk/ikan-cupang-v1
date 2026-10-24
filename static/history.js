@@ -33,12 +33,21 @@
     function renderJobs(jobs) {
         list.innerHTML = "";
         jobs.forEach(function (j) {
+            var isResolve = (j.job_type === "resolve_unreg");
             var card = document.createElement("div");
-            card.className = "hist-card " + (j.status === "running" ? "hist-running" : j.status === "done" ? "hist-done" : "hist-stopped");
+            card.className = "hist-card " + (isResolve ? "hist-resolve-unreg " : "") + (j.status === "running" ? "hist-running" : j.status === "done" ? "hist-done" : "hist-stopped");
             card.id = "hist-" + j.job_id;
 
             var statusIcon = j.status === "running" ? "🔄" : j.status === "done" ? "✅" : "⏹️";
             var statusText = j.status === "running" ? "Sedang Berjalan" : j.status === "done" ? "Selesai" : "Dihentikan";
+
+            var typeBadge = isResolve
+                ? '<span class="hist-type-badge resolve">⚡ Resolve Unreg</span>'
+                : '<span class="hist-type-badge normal">📬 Cek IMAP</span>';
+
+            var parentBadge = (isResolve && j.parent_job_id)
+                ? '<span class="hist-parent-badge">🔗 Parent: #' + escapeHtml(j.parent_job_id) + '</span>'
+                : '';
 
             var ownerBadge = j.owner_label ? '<span class="hist-owner-badge">👤 ' + escapeHtml(j.owner_label) + '</span>' : '';
 
@@ -54,8 +63,16 @@
                 '</div>';
 
             var meta = j.meta || {};
+            var metaDesc = isResolve
+                ? '<span>🎯 Target: Akun Unreg (' + j.checked + '/' + j.total + ' akun — ' + j.percentage + '%)</span>'
+                : '<span>📊 ' + j.checked + '/' + j.total + ' akun (' + j.percentage + '%)</span>';
+
+            if (isResolve && meta.resolved_domains) {
+                metaDesc += '<span>🌐 ' + meta.resolved_domains + ' domain di-resolve</span>';
+            }
+
             var metaHtml = '<div class="hist-meta">' +
-                '<span>📊 ' + j.checked + '/' + j.total + ' akun (' + j.percentage + '%)</span>' +
+                metaDesc +
                 '<span>📅 ' + j.created_at + '</span>' +
                 '<span>⏰ Expires: ' + j.expires_at + '</span>' +
                 '</div>';
@@ -65,6 +82,7 @@
             if (j.noemail > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/noemail" class="hist-dl-btn noemail" download>📭 NoEmail.txt</a>';
             if (j.die > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/die" class="hist-dl-btn die" download>💀 Die.txt</a>';
             if (j.unreg > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/unreg" class="hist-dl-btn unreg" download>❓ Unreg.txt</a>';
+            buttonsHtml += '<a href="' + APP_BASE + '/?job_id=' + j.job_id + '" target="_blank" class="hist-open-btn" onclick="event.stopPropagation()">↗️ Buka Console</a>';
             buttonsHtml += '<button class="hist-extend-btn" onclick="event.stopPropagation();extendJob(\'' + j.job_id + '\')">➕ Tambah 7 Hari</button>';
             buttonsHtml += '<button class="hist-delete-btn" onclick="event.stopPropagation();deleteJob(\'' + j.job_id + '\')">🗑️ Hapus</button>';
             buttonsHtml += '</div>';
@@ -81,6 +99,8 @@
                 '<div class="hist-title">' +
                 '<span class="hist-status-icon">' + statusIcon + '</span>' +
                 '<span class="hist-job-id">Job #' + j.job_id + '</span>' +
+                typeBadge +
+                parentBadge +
                 '<span class="hist-status-badge ' + j.status + '">' + statusText + '</span>' +
                 ownerBadge +
                 '<span class="hist-expand-hint">🔽 klik untuk lihat live</span>' +
