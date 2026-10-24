@@ -405,6 +405,7 @@ def download_file(job_id, file_type):
         "noemail": "noemail.txt",
         "die": "die.txt",
         "unreg": "unreg.txt",
+        "unreg_accounts": "unreg_accounts.txt",
         "domain_skipped": "domain_skipped.txt",
     }
     if file_type not in allowed:
@@ -416,6 +417,131 @@ def download_file(job_id, file_type):
 
     return send_file(filepath, as_attachment=True,
                      download_name=f"{file_type}_{job_id}.txt", mimetype="text/plain")
+
+
+@app.route("/api/resolve-unreg/<job_id>", methods=["POST"])
+@login_required
+def resolve_unreg_job(job_id):
+    cleanup_expired_jobs()
+    jdata = jobs.get(job_id)
+    if not jdata:
+        return jsonify({"error": "Job tidak ditemukan"}), 404
+    user_hash = session.get("code_hash", "")
+    if not session.get("is_admin") and jdata.get("owner") != user_hash:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    results_dir = os.path.join(JOBS_DIR, job_id)
+    unreg_acc_file = os.path.join(results_dir, "unreg_accounts.txt")
+    unreg_dom_file = os.path.join(results_dir, "unreg.txt")
+
+    accounts = []
+    if os.path.exists(unreg_acc_file):
+        with open(unreg_acc_file, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                line = line.strip()
+                if line and ":" in line:
+                    em, pw = line.split(":", 1)
+                    accounts.append({"email": em.strip(), "password": pw.strip()})
+
+    # Fallback jika unreg_accounts.txt belum ada (misal job lama): filter checker.accounts berdasarkan unreg.txt
+    if not accounts and os.path.exists(unreg_dom_file):
+        unreg_doms = set(line.strip().lower() for line in open(unreg_dom_file, errors="replace") if line.strip())
+        checker = jdata.get("checker")
+        if checker and hasattr(checker, "accounts"):
+            for acc in checker.accounts:
+                dom = acc["email"].split("@")[-1].lower()
+                if dom in unreg_doms:
+                    accounts.append(acc)
+
+    if not accounts:
+        return jsonify({"error": "Tidak ada akun unreg yang ditemukan untuk job ini"}), 400
+
+    # Kumpulkan domain unreg unik
+    unique_domains = list(dict.fromkeys(a["email"].split("@")[-1].lower() for a in accounts if "@" in a["email"]))
+
+    from concurrent.futures import ThreadPoolExecutor
+    from imap_config import query_mx, map_mx_to_imap, save_master_imap_configs, lookup_imap_config
+
+    new_configs = {}
+    def _resolve(dom):
+        mx = query_mx(dom)
+        if mx:
+            cfg = map_mx_to_imap(mx)
+            if cfg:
+                return dom, cfg
+        return dom, None
+
+    with ThreadPoolExecutor(max_workers=min(30, max(1, len(unique_domains)))) as executor:
+        for dom, cfg in executor.map(_resolve, unique_domains):
+            if cfg:
+                new_configs[dom] = cfg
+
+    if new_configs:
+        save_master_imap_configs(new_configs)
+
+    # Filter akun: HANYA akun yang berhubungan dengan unreg dan domainnya berhasil di-resolve
+    checking_accounts = [
+        a for a in accounts
+        if lookup_imap_config(a["email"].split("@")[-1].lower(), extra_configs=new_configs)
+    ]
+
+    if not checking_accounts:
+        return jsonify({
+            "success": False,
+            "message": f"Dari {len(unique_domains)} domain unreg, tidak ada server IMAP yang berhasil di-resolve.",
+            "total_unreg_accounts": len(accounts),
+            "resolved_domains": len(new_configs),
+            "checking_accounts": 0,
+        })
+
+    # Start new job dengan checking_accounts saja
+    new_job_id = str(uuid.uuid4())[:8]
+    new_results_dir = os.path.join(JOBS_DIR, new_job_id)
+    now = datetime.now()
+
+    parent_checker = jdata.get("checker")
+    target_senders = getattr(parent_checker, "target_senders", [])
+    keywords = getattr(parent_checker, "keywords", [])
+    search_days = getattr(parent_checker, "search_days", 365)
+    max_threads = getattr(parent_checker, "max_threads", 20)
+    proxy_list = getattr(parent_checker, "proxy_list", [])
+
+    new_checker = ImapChecker(
+        job_id=new_job_id,
+        results_dir=new_results_dir,
+        accounts=checking_accounts,
+        target_senders=target_senders,
+        keywords=keywords,
+        search_days=search_days,
+        max_threads=max_threads,
+        proxy_list=proxy_list,
+    )
+
+    jobs[new_job_id] = {
+        "checker": new_checker,
+        "created_at": now,
+        "expires_at": now + timedelta(days=DEFAULT_EXPIRY_DAYS),
+        "owner": jdata.get("owner", ""),
+        "owner_label": jdata.get("owner_label", "unknown"),
+        "meta": {
+            "total_accounts": len(checking_accounts),
+            "total_senders": len(target_senders),
+            "total_keywords": len(keywords),
+            "total_proxies": len(proxy_list),
+            "parent_job_id": job_id,
+            "senders_text": getattr(parent_checker, "senders_text", "")[:100],
+            "keywords_text": getattr(parent_checker, "keywords_text", "")[:100],
+        },
+    }
+    new_checker.run()
+
+    return jsonify({
+        "success": True,
+        "new_job_id": new_job_id,
+        "resolved_domains": len(new_configs),
+        "total_unreg_accounts": len(accounts),
+        "checking_accounts": len(checking_accounts),
+    })
 
 
 # ---- Get Email API ----

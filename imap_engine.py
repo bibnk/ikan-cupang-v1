@@ -643,6 +643,7 @@ class ImapChecker:
         self.noemail_file = os.path.join(self.results_dir, "noemail.txt")
         self.die_file = os.path.join(self.results_dir, "die.txt")
         self.unreg_file = os.path.join(self.results_dir, "unreg.txt")
+        self.unreg_accounts_file = os.path.join(self.results_dir, "unreg_accounts.txt")
         self.domain_skip_file = os.path.join(self.results_dir, "domain_skipped.txt")
 
         # Locks
@@ -650,6 +651,7 @@ class ImapChecker:
         self.noemail_lock = threading.Lock()
         self.die_lock = threading.Lock()
         self.unreg_lock = threading.Lock()
+        self.unreg_accounts_lock = threading.Lock()
         self.domain_skip_lock = threading.Lock()
         self.imap_config_lock = threading.Lock()
 
@@ -840,6 +842,11 @@ class ImapChecker:
                 with open(self.unreg_file, 'a', encoding='utf-8') as f:
                     f.write(f"{domain}\n")
                 self.unreg_domains.add(domain)
+
+    def _write_unreg_account(self, email_addr, password):
+        with self.unreg_accounts_lock:
+            with open(self.unreg_accounts_file, 'a', encoding='utf-8') as f:
+                f.write(f"{email_addr}:{password}\n")
 
     def _write_domain_skip(self, email_addr, password):
         with self.domain_skip_lock:
@@ -1086,10 +1093,12 @@ class ImapChecker:
                     configs[domain] = result
                 else:
                     self._write_unreg(domain)
+                    self._write_unreg_account(email_addr, password)
                     self._update_progress("unreg")
                     queue.task_done()
                     continue
             elif not imap_cfg:
+                self._write_unreg_account(email_addr, password)
                 self._update_progress("unreg")
                 queue.task_done()
                 continue

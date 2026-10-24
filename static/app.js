@@ -1100,6 +1100,106 @@
         enableDownloadLink("die", d.die > 0);
         enableDownloadLink("unreg", d.unreg > 0);
         enableDownloadLink("domain_skipped", d.skipped > 0);
+
+        if (d.status === "done" && d.unreg > 0) {
+            showUnregResolveModal(currentJobId, d.unreg);
+        }
+    }
+
+    function showUnregResolveModal(jobId, unregCount) {
+        if (!jobId || unregCount <= 0) return;
+        var old = document.getElementById("unreg-resolve-modal");
+        if (old) old.remove();
+
+        var modal = document.createElement("div");
+        modal.id = "unreg-resolve-modal";
+        modal.className = "ge-modal";
+        modal.innerHTML =
+            '<div class="ge-modal-backdrop"></div>' +
+            '<div class="ge-modal-container" style="max-width:480px; padding:24px;">' +
+            '<div class="ge-modal-header" style="margin-bottom:12px;">' +
+            '<div class="ge-modal-title">' +
+            '<span class="ge-modal-subject" style="font-size:1.15rem; font-weight:700;">🌐 Auto-Resolve Domain Unreg</span>' +
+            '<span class="ge-modal-info" style="font-size:0.85rem; color:var(--text-muted);">Pengecekan selesai dengan akun unreg</span>' +
+            '</div>' +
+            '<button class="ge-modal-close" id="unreg-close-btn">&times;</button>' +
+            '</div>' +
+            '<div class="ge-modal-body" style="padding:0 0 16px 0;">' +
+            '<p style="color:var(--text); font-size:0.95rem; line-height:1.5; margin-bottom:16px;">' +
+            'Ditemukan <strong style="color:var(--accent); font-size:1.05rem;">' + unregCount + '</strong> akun berstatus unreg.<br>' +
+            'Mau coba auto-resolve MX record untuk mencari server IMAP dan lanjut cek empass akun unreg tersebut?' +
+            '</p>' +
+            '<div id="unreg-status-box" style="display:none; padding:10px 14px; border-radius:6px; font-size:0.9rem; margin-bottom:12px; background:rgba(255,255,255,0.05); border:1px solid var(--border);"></div>' +
+            '</div>' +
+            '<div style="display:flex; gap:10px; justify-content:flex-end;">' +
+            '<button type="button" class="btn btn-secondary" id="unreg-cancel-btn" style="padding:8px 16px;">Tutup</button>' +
+            '<button type="button" class="btn btn-primary" id="unreg-confirm-btn" style="padding:8px 18px; background:var(--accent); color:#fff; font-weight:600;">🚀 Resolve MX & Cek</button>' +
+            '</div>' +
+            '</div>';
+
+        document.body.appendChild(modal);
+        document.body.style.overflow = "hidden";
+
+        function closeModal() {
+            modal.remove();
+            document.body.style.overflow = "";
+        }
+
+        modal.querySelector("#unreg-close-btn").addEventListener("click", closeModal);
+        modal.querySelector(".ge-modal-backdrop").addEventListener("click", closeModal);
+        modal.querySelector("#unreg-cancel-btn").addEventListener("click", closeModal);
+
+        var confirmBtn = modal.querySelector("#unreg-confirm-btn");
+        var cancelBtn = modal.querySelector("#unreg-cancel-btn");
+        var statusBox = modal.querySelector("#unreg-status-box");
+
+        confirmBtn.addEventListener("click", function () {
+            confirmBtn.disabled = true;
+            cancelBtn.disabled = true;
+            confirmBtn.textContent = "⏳ Sedang Resolve MX...";
+            statusBox.style.display = "block";
+            statusBox.style.color = "var(--text-muted)";
+            statusBox.textContent = "🔍 Sedang mencari MX record dan server IMAP untuk domain unreg...";
+
+            fetch(APP_BASE + "/api/resolve-unreg/" + jobId, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(function (res) { return res.json(); })
+            .then(function (res) {
+                if (res.success && res.new_job_id) {
+                    statusBox.style.color = "#22c55e";
+                    statusBox.textContent = "✅ Berhasil resolve " + res.resolved_domains + " domain! Memulai pengecekan " + res.checking_accounts + " akun unreg...";
+                    setTimeout(function () {
+                        closeModal();
+                        currentJobId = res.new_job_id;
+                        saveJobId(res.new_job_id);
+                        progressBar.style.width = "0%";
+                        progressPct.textContent = "0%";
+                        progressDetail.textContent = "0 / " + res.checking_accounts + " akun";
+                        renderedLiveCount = 0;
+                        liveList.innerHTML = "";
+                        liveSection.classList.add("hidden");
+                        liveCounter.textContent = "0";
+                        showProgress();
+                        listenProgress(res.new_job_id);
+                    }, 1200);
+                } else {
+                    statusBox.style.color = "#ef4444";
+                    statusBox.textContent = "❌ " + (res.message || res.error || "Gagal me-resolve domain unreg");
+                    confirmBtn.disabled = false;
+                    cancelBtn.disabled = false;
+                    confirmBtn.textContent = "🚀 Coba Lagi";
+                }
+            })
+            .catch(function (err) {
+                statusBox.style.color = "#ef4444";
+                statusBox.textContent = "❌ Error: " + err.message;
+                confirmBtn.disabled = false;
+                cancelBtn.disabled = false;
+                confirmBtn.textContent = "🚀 Coba Lagi";
+            });
+        });
     }
 
     function enableDownloadLink(type, enable) {

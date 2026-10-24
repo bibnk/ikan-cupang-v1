@@ -163,3 +163,160 @@ def save_imap_success(data):
             json.dump(data, f, indent=2, ensure_ascii=False)
     except Exception:
         pass
+
+
+import socket, struct
+
+def query_mx(domain, dns_server="8.8.8.8", timeout=2.0):
+    """Raw stdlib DNS query for MX record."""
+    # ponytail: minimal raw DNS MX query via stdlib socket; use dnspython if full DNSSEC/TCP fallback needed
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(timeout)
+        header = b"\x12\x34\x01\x00\x00\x01\x00\x00\x00\x00\x00\x00"
+        qname = b"".join(bytes([len(p)]) + p.encode() for p in domain.split(".")) + b"\x00"
+        packet = header + qname + struct.pack("!HH", 15, 1)
+        s.sendto(packet, (dns_server, 53))
+        data, _ = s.recvfrom(1024)
+        s.close()
+
+        ancount = struct.unpack("!H", data[6:8])[0]
+        if ancount == 0:
+            return None
+
+        idx = 12
+        while data[idx] != 0:
+            if data[idx] >= 192:
+                idx += 2
+                break
+            idx += data[idx] + 1
+        else:
+            idx += 1
+        idx += 4
+
+        def read_name(offset):
+            parts = []
+            visited = set()
+            while True:
+                if offset in visited: break
+                visited.add(offset)
+                if offset >= len(data): break
+                b = data[offset]
+                if b == 0:
+                    offset += 1
+                    break
+                elif b >= 192:
+                    ptr = struct.unpack("!H", data[offset:offset+2])[0] & 0x3FFF
+                    p_name, _ = read_name(ptr)
+                    parts.append(p_name)
+                    offset += 2
+                    break
+                else:
+                    offset += 1
+                    parts.append(data[offset:offset+b].decode('latin1', errors='replace'))
+                    offset += b
+            return ".".join(parts), offset
+
+        mx_records = []
+        for _ in range(ancount):
+            if idx >= len(data): break
+            _, idx = read_name(idx)
+            rtype, rclass, ttl, rdlen = struct.unpack("!HHIH", data[idx:idx+10])
+            idx += 10
+            rdata_end = idx + rdlen
+            if rtype == 15:
+                pref = struct.unpack("!H", data[idx:idx+2])[0]
+                name, _ = read_name(idx + 2)
+                mx_records.append((pref, name.lower().rstrip(".")))
+            idx = rdata_end
+
+        if not mx_records:
+            return None
+        mx_records.sort(key=lambda x: x[0])
+        return mx_records[0][1]
+    except Exception:
+        return None
+
+
+def probe_imap_port(host, port=993, timeout=1.5):
+    """Probe if host opens IMAP SSL port."""
+    try:
+        s = socket.socket()
+        s.settimeout(timeout)
+        s.connect((host, port))
+        s.close()
+        return True
+    except Exception:
+        return False
+
+
+def map_mx_to_imap(mx_host):
+    """Map known provider MX exchangers to their dedicated IMAP endpoints."""
+    # ponytail: known multi-tenant provider mappings; extend as new providers surface
+    if not mx_host:
+        return None
+    m = mx_host.lower()
+    if any(k in m for k in ["google", "gmail", "outlook", "office365", "microsoft", "hotmail", "zoho"]):
+        return None
+    if "ovh.net" in m or "ovh.com" in m:
+        return {"server": "ssl0.ovh.net", "port": 993}
+    if "hostinger" in m:
+        return {"server": "imap.hostinger.com", "port": 993}
+    if "stackmail.com" in m:
+        return {"server": "imap.stackmail.com", "port": 993}
+    if "mailhostbox.com" in m:
+        return {"server": "imap.mailhostbox.com", "port": 993}
+    if "hostedemail.com" in m:
+        return {"server": "mail.hostedemail.com", "port": 993}
+    if "aliyun.com" in m or "mxhichina.com" in m:
+        return {"server": "imap.aliyun.com", "port": 993}
+    if "kinghost.net" in m:
+        return {"server": "imap.kinghost.net", "port": 993}
+    if "simply.com" in m:
+        return {"server": "mail.simply.com", "port": 993}
+    if "one.com" in m:
+        return {"server": "imap.one.com", "port": 993}
+    if "mail.ru" in m:
+        return {"server": "imap.mail.ru", "port": 993}
+    if "yandex" in m:
+        return {"server": "imap.yandex.com", "port": 993}
+    if "zaq.ad.jp" in m or "zaq.ne.jp" in m:
+        return {"server": "imap.jcom.zaq.ne.jp", "port": 993}
+    if "mesh.ne.jp" in m or "biglobe.ne.jp" in m:
+        return {"server": "mail.biglobe.ne.jp", "port": 993}
+    if "nifty.com" in m or "nifty.ne.jp" in m:
+        return {"server": "imap.nifty.com", "port": 993}
+    if "mose-mail.jp" in m:
+        return {"server": "mbox.mose-mail.jp", "port": 993}
+    if "enmail.co" in m:
+        return {"server": "mail.enmail.co", "port": 993}
+    if "gmoserver.jp" in m or "onamae.ne.jp" in m:
+        return {"server": "imap.onamae.ne.jp", "port": 993}
+    if "muumuu-mail.com" in m:
+        return {"server": "imap4.muumuu-mail.com", "port": 993}
+    if probe_imap_port(mx_host, 993):
+        return {"server": mx_host, "port": 993}
+    return None
+
+
+def save_master_imap_configs(new_configs):
+    """Atomically append new domain configs to central & local databases."""
+    if not new_configs:
+        return
+    DEFAULT_IMAP_CONFIG.update(new_configs)
+    tmp_path = IMAP_CONFIG_PATH + ".tmp"
+    try:
+        os.makedirs(os.path.dirname(IMAP_CONFIG_PATH), exist_ok=True)
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(DEFAULT_IMAP_CONFIG, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, IMAP_CONFIG_PATH)
+    except Exception:
+        pass
+    if _local_cfg_path != IMAP_CONFIG_PATH and os.path.exists(_local_cfg_path):
+        try:
+            with open(_local_cfg_path, "w", encoding="utf-8") as f:
+                json.dump(DEFAULT_IMAP_CONFIG, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
