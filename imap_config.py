@@ -238,26 +238,82 @@ def query_mx(domain, dns_server="8.8.8.8", timeout=2.0):
         return None
 
 
-def probe_imap_port(host, port=993, timeout=1.5):
-    """Probe if host opens IMAP SSL port."""
+DISALLOWED_MX_KEYWORDS = [
+    # 1. OAuth / 2FA / Modern Auth required (Basic Auth permanently disabled)
+    "google", "gmail", "googlemail", "aspmx",
+    "outlook", "office365", "microsoft", "hotmail", "live.com", "msn.com",
+    "zoho",
+    "icloud", "apple",
+    "yahoo", "ymail", "yahoodns",
+    "protonmail", "proton.me",
+    "tuta", "tutanota",
+    "fastmail",
+
+    # 2. Inbound Security / Spam Gateways (relays without IMAP mailboxes)
+    "mimecast",
+    "spamexperts",
+    "barracuda",
+    "proofpoint", "pphosted",
+    "trendmicro",
+    "mailinblack",
+    "cloudflare",
+    "hornetsecurity",
+    "ironport",
+    "fireeye",
+    "messagelabs",
+    "symantec",
+    "sophos",
+    "cleanmail",
+    "antispam",
+    "spamfilter",
+
+    # 3. Dead / fake / unresponsive MX relays
+    "generic-isp",
+    "breakthur",
+    "b5z.net",
+    "secureserver.net",
+]
+
+
+import ssl
+
+def verify_usable_imap(host, port=993, timeout=1.5):
+    """Verify host responds with valid IMAP greeting (* OK) and allows LOGIN."""
+    # ponytail: basic SSL banner verification; rejects gateways and non-IMAP servers
     try:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
         s = socket.socket()
         s.settimeout(timeout)
-        s.connect((host, port))
-        s.close()
+        ss = ctx.wrap_socket(s)
+        ss.connect((host, port))
+        banner = ss.recv(512).decode("utf-8", errors="ignore")
+        ss.close()
+        if not banner.startswith("* OK") or "LOGINDISABLED" in banner:
+            return False
         return True
     except Exception:
         return False
 
 
-def map_mx_to_imap(mx_host):
-    """Map known provider MX exchangers to their dedicated IMAP endpoints."""
-    # ponytail: known multi-tenant provider mappings; extend as new providers surface
+def probe_imap_port(host, port=993, timeout=1.5):
+    """Backward-compatible alias using verify_usable_imap."""
+    return verify_usable_imap(host, port=port, timeout=timeout)
+
+
+def map_mx_to_imap(mx_host, domain=None):
+    """Map known provider MX exchangers to their dedicated IMAP endpoints, strictly filtering useless/OAuth hosts."""
+    # ponytail: known multi-tenant provider mappings + strict verification; extend as new providers surface
     if not mx_host:
         return None
     m = mx_host.lower()
-    if any(k in m for k in ["google", "gmail", "outlook", "office365", "microsoft", "hotmail", "zoho"]):
+
+    # Reject unsupported / OAuth / Gateway hosts immediately
+    if any(k in m for k in DISALLOWED_MX_KEYWORDS):
         return None
+
+    # Verified multi-tenant providers (all accept direct email:pass basic auth)
     if "ovh.net" in m or "ovh.com" in m:
         return {"server": "ssl0.ovh.net", "port": 993}
     if "hostinger" in m:
@@ -294,8 +350,15 @@ def map_mx_to_imap(mx_host):
         return {"server": "imap.onamae.ne.jp", "port": 993}
     if "muumuu-mail.com" in m:
         return {"server": "imap4.muumuu-mail.com", "port": 993}
-    if probe_imap_port(mx_host, 993):
+
+    # Custom MX: MUST pass real IMAP banner check (* OK without LOGINDISABLED)
+    if verify_usable_imap(mx_host, 993):
         return {"server": mx_host, "port": 993}
+    if domain:
+        if verify_usable_imap(f"mail.{domain}", 993):
+            return {"server": f"mail.{domain}", "port": 993}
+        if verify_usable_imap(f"imap.{domain}", 993):
+            return {"server": f"imap.{domain}", "port": 993}
     return None
 
 

@@ -473,7 +473,7 @@ def resolve_unreg_job(job_id):
     def _resolve(dom):
         mx = query_mx(dom)
         if mx:
-            cfg = map_mx_to_imap(mx)
+            cfg = map_mx_to_imap(mx, domain=dom)
             if cfg:
                 return dom, cfg
         return dom, None
