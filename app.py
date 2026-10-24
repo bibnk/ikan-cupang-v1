@@ -4,6 +4,7 @@
 import os
 import uuid
 import shutil
+import threading
 from datetime import datetime, timedelta
 import time
 import json
@@ -467,10 +468,17 @@ def resolve_unreg_job(job_id):
     unique_domains = list(dict.fromkeys(a["email"].split("@")[-1].lower() for a in accounts if "@" in a["email"]))
 
     from concurrent.futures import ThreadPoolExecutor
-    from imap_config import query_mx, map_mx_to_imap, save_master_imap_configs, lookup_imap_config
+    from imap_config import (
+        query_mx, map_mx_to_imap, save_master_imap_configs, lookup_imap_config,
+        save_master_unusable_domains, is_unusable_domain
+    )
 
     new_configs = {}
+    unusable_domains = set()
+
     def _resolve(dom):
+        if is_unusable_domain(dom):
+            return dom, None
         mx = query_mx(dom)
         if mx:
             cfg = map_mx_to_imap(mx, domain=dom)
@@ -482,9 +490,13 @@ def resolve_unreg_job(job_id):
         for dom, cfg in executor.map(_resolve, unique_domains):
             if cfg:
                 new_configs[dom] = cfg
+            else:
+                unusable_domains.add(dom)
 
     if new_configs:
         save_master_imap_configs(new_configs)
+    if unusable_domains:
+        save_master_unusable_domains(unusable_domains)
 
     # Filter akun: HANYA akun yang berhubungan dengan unreg dan domainnya berhasil di-resolve
     checking_accounts = [
@@ -549,6 +561,68 @@ def resolve_unreg_job(job_id):
         "total_unreg_accounts": len(accounts),
         "checking_accounts": len(checking_accounts),
     })
+
+
+@app.route("/api/resolve-unreg-bg/<job_id>", methods=["POST"])
+@login_required
+def resolve_unreg_bg(job_id):
+    results_dir = os.path.join(JOBS_DIR, job_id)
+    if not os.path.isdir(results_dir):
+        return jsonify({"error": "Job tidak ditemukan"}), 404
+
+    def _bg_task():
+        unreg_dom_file = os.path.join(results_dir, "unreg.txt")
+        if not os.path.exists(unreg_dom_file):
+            return
+        domains = [line.strip().lower() for line in open(unreg_dom_file, errors="replace") if line.strip()]
+        if not domains:
+            return
+
+        from concurrent.futures import ThreadPoolExecutor
+        from imap_config import (
+            query_mx, map_mx_to_imap, save_master_imap_configs,
+            save_master_unusable_domains, is_unusable_domain, lookup_imap_config
+        )
+
+        todo_domains = [d for d in dict.fromkeys(domains) if not lookup_imap_config(d) and not is_unusable_domain(d)]
+        if not todo_domains:
+            return
+
+        new_configs = {}
+        unusable_domains = set()
+
+        def _resolve_one(dom):
+            mx = query_mx(dom)
+            if mx:
+                cfg = map_mx_to_imap(mx, domain=dom)
+                if cfg:
+                    return dom, cfg
+            return dom, None
+
+        with ThreadPoolExecutor(max_workers=min(30, len(todo_domains))) as pool:
+            for count, (dom, cfg) in enumerate(pool.map(_resolve_one, todo_domains), 1):
+                if cfg:
+                    new_configs[dom] = cfg
+                else:
+                    unusable_domains.add(dom)
+
+                # Periodic flush every 50 domains
+                if count % 50 == 0:
+                    if new_configs:
+                        save_master_imap_configs(new_configs)
+                        new_configs.clear()
+                    if unusable_domains:
+                        save_master_unusable_domains(unusable_domains)
+                        unusable_domains.clear()
+
+        # Final flush
+        if new_configs:
+            save_master_imap_configs(new_configs)
+        if unusable_domains:
+            save_master_unusable_domains(unusable_domains)
+
+    threading.Thread(target=_bg_task, daemon=True).start()
+    return jsonify({"success": True, "message": "Background MX resolve started"})
 
 
 # ---- Get Email API ----

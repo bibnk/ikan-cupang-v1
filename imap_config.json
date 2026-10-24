@@ -55829,5 +55829,641 @@
   "ljkjouinujhi.info": {
     "port": 993,
     "server": "imap.breakthur.com"
+  },
+  "topriparazione.it": {
+    "server": "mail.register.it",
+    "port": 993
+  },
+  "telkomsa.net": {
+    "server": "imap.telkomsa.net",
+    "port": 993
+  },
+  "itchydog.store": {
+    "server": "mail.itchydog.store",
+    "port": 993
+  },
+  "gelitik.in": {
+    "server": "mail.gelitik.in",
+    "port": 993
+  },
+  "forthnet.gr": {
+    "server": "mail.forthnet.gr",
+    "port": 993
+  },
+  "slither.win": {
+    "server": "mail.slither.win",
+    "port": 993
+  },
+  "21sn.net": {
+    "server": "mx.21sn.net",
+    "port": 993
+  },
+  "voltivi.com": {
+    "server": "serviciodecorreo.sentidocomun.es",
+    "port": 993
+  },
+  "aussiebroadband.com.au": {
+    "server": "mail.aussiebroadband.com.au",
+    "port": 993
+  },
+  "chyx898.fun": {
+    "server": "mail.chyx898.fun",
+    "port": 993
+  },
+  "sazale.ed.jp": {
+    "server": "imap.sazale.ed.jp",
+    "port": 993
+  },
+  "firstmailler.com": {
+    "server": "mail.firstmailler.com",
+    "port": 993
+  },
+  "rainyfeel.com": {
+    "server": "mail.rainyfeel.com",
+    "port": 993
+  },
+  "axibei.com": {
+    "server": "mail.axibei.com",
+    "port": 993
+  },
+  "fmaild.com": {
+    "server": "mail.fmaild.com",
+    "port": 993
+  },
+  "trusmail.net": {
+    "server": "mail.trusmail.net",
+    "port": 993
+  },
+  "munisantacatarinamita.gob.gt": {
+    "server": "munisantacatarinamita.gob.gt",
+    "port": 993
+  },
+  "capturedata.com": {
+    "server": "mail.capturedata.com",
+    "port": 993
+  },
+  "globalprimaindotek.com": {
+    "server": "mail.globalprimaindotek.com",
+    "port": 993
+  },
+  "ionospec.it": {
+    "server": "mail.sicurezzapostale.it",
+    "port": 993
+  },
+  "dangmn22.com": {
+    "server": "mail.dangmn22.com",
+    "port": 993
+  },
+  "boxformail.in": {
+    "server": "mail.boxformail.in",
+    "port": 993
+  },
+  "go2site.info": {
+    "server": "mail.go2site.info",
+    "port": 993
+  },
+  "citylinkexpress.com.my": {
+    "server": "ns1.citylinkexpress.com.my",
+    "port": 993
+  },
+  "abs-de.jp": {
+    "server": "mail.abs-de.jp",
+    "port": 993
+  },
+  "rmflix.org": {
+    "server": "mail.rmflix.org",
+    "port": 993
+  },
+  "fama.gov.my": {
+    "server": "smtp.fama.gov.my",
+    "port": 993
+  },
+  "habeshainc.org": {
+    "server": "mail.habeshainc.org",
+    "port": 993
+  },
+  "axiap.fr": {
+    "server": "mail.axiap.fr",
+    "port": 993
+  },
+  "perrenot.fr": {
+    "server": "mail.perrenot.fr",
+    "port": 993
+  },
+  "qsell.pl": {
+    "server": "m2.sohost.email",
+    "port": 993
+  },
+  "jegger.win": {
+    "server": "mail.jegger.win",
+    "port": 993
+  },
+  "gr2.co.jp": {
+    "server": "imap.gr2.co.jp",
+    "port": 993
+  },
+  "baltnet.ru": {
+    "server": "mail.baltnet.ru",
+    "port": 993
+  },
+  "ketoanvn.com.vn": {
+    "server": "mail103150.maychuemail.com",
+    "port": 993
+  },
+  "6ip.us": {
+    "server": "mail.6ip.us",
+    "port": 993
+  },
+  "coctechnology.com": {
+    "server": "mail.coctechnology.com",
+    "port": 993
+  },
+  "parkprint.com": {
+    "server": "smtp1-msp.securence.com",
+    "port": 993
+  },
+  "4warding.net": {
+    "server": "mail.4warding.net",
+    "port": 993
+  },
+  "asypra.com": {
+    "server": "mail.asypra.com",
+    "port": 993
+  },
+  "uspot.jp": {
+    "server": "imap.uspot.jp",
+    "port": 993
+  },
+  "chyx888.fun": {
+    "server": "mail.chyx888.fun",
+    "port": 993
+  },
+  "thelocationlab.com": {
+    "server": "thelocationlab.com",
+    "port": 993
+  },
+  "dalat1200.com": {
+    "server": "mail.dalat1200.com",
+    "port": 993
+  },
+  "octp-net.ne.jp": {
+    "server": "mail.octp-net.ne.jp",
+    "port": 993
+  },
+  "student.xjtlu.edu.cn": {
+    "server": "mail.xjtlu.edu.cn",
+    "port": 993
+  },
+  "dang558.com": {
+    "server": "mail.dang558.com",
+    "port": 993
+  },
+  "1337.no": {
+    "server": "smtp.1337.no",
+    "port": 993
+  },
+  "aldrtechnology.com": {
+    "server": "aldrtechnology.com",
+    "port": 993
+  },
+  "hostprofis.at": {
+    "server": "mail.hostprofis.at",
+    "port": 993
+  },
+  "g.pl": {
+    "server": "mx.poczta.gazeta.pl",
+    "port": 993
+  },
+  "emailinfive.com": {
+    "server": "mail.emailinfive.com",
+    "port": 993
+  },
+  "argentinacrossing.com.ar": {
+    "server": "argentinacrossing.com.ar",
+    "port": 993
+  },
+  "raptor.co.jp": {
+    "server": "imap.raptor.co.jp",
+    "port": 993
+  },
+  "amis.net": {
+    "server": "in.mail.amis.net",
+    "port": 993
+  },
+  "mail4tax.com": {
+    "server": "mail.mail4tax.com",
+    "port": 993
+  },
+  "mail.gtavstore.com": {
+    "server": "mail.mail.gtavstore.com",
+    "port": 993
+  },
+  "gm.tp1.jp": {
+    "server": "imap.gm.tp1.jp",
+    "port": 993
+  },
+  "unsl.edu.ar": {
+    "server": "imap.unsl.edu.ar",
+    "port": 993
+  },
+  "valderoland.fr": {
+    "server": "mail.valderoland.fr",
+    "port": 993
+  },
+  "acie.jp": {
+    "server": "imap4.muumuu-mail.com",
+    "port": 993
+  },
+  "ishiqiu.com": {
+    "server": "mail.ishiqiu.com",
+    "port": 993
+  },
+  "akademiafalubaz.pl": {
+    "server": "mail.hqhost.pl",
+    "port": 993
+  },
+  "maillsk.com": {
+    "server": "mail.maillsk.com",
+    "port": 993
+  },
+  "empresasvelazquez.com": {
+    "server": "mail.empresasvelazquez.com",
+    "port": 993
+  },
+  "damatta.com": {
+    "server": "mail.damatta.com",
+    "port": 993
+  },
+  "xmkx.website": {
+    "server": "xmkx.website",
+    "port": 993
+  },
+  "sunbathe.co.jp": {
+    "server": "imap.sunbathe.co.jp",
+    "port": 993
+  },
+  "dikops.win": {
+    "server": "mail.dikops.win",
+    "port": 993
+  },
+  "kinect.co.nz": {
+    "server": "mail.kinect.co.nz",
+    "port": 993
+  },
+  "fmailler.com": {
+    "server": "mail.fmailler.com",
+    "port": 993
+  },
+  "alhijrahcollege.com": {
+    "server": "mail.alhijrahcollege.com",
+    "port": 993
+  },
+  "e-milio.com": {
+    "server": "mx.e-milio.com",
+    "port": 993
+  },
+  "deeres.party": {
+    "server": "mail.deeres.party",
+    "port": 993
+  },
+  "khu.ac.ir": {
+    "server": "mail.khu.ac.ir",
+    "port": 993
+  },
+  "ananzi.co.za": {
+    "server": "mx.cloudafrica.email",
+    "port": 993
+  },
+  "cigaraficionado.eu": {
+    "server": "mail.cigaraficionado.eu",
+    "port": 993
+  },
+  "icv-net.ne.jp": {
+    "server": "mail.icv-net.ne.jp",
+    "port": 993
+  },
+  "ad1gate.com": {
+    "server": "mx1.idcloudhosting.com",
+    "port": 993
+  },
+  "franchiseindia.in": {
+    "server": "mail.franchiseindia.in",
+    "port": 993
+  },
+  "dlr.daya-motora.com": {
+    "server": "mail.dlr.daya-motora.com",
+    "port": 993
+  },
+  "firstmailler.net": {
+    "server": "mx.firstmailler.net",
+    "port": 993
+  },
+  "yvonneyvonne.fr": {
+    "server": "_dc-mx.8f6d44e24fdd.yvonneyvonne.fr",
+    "port": 993
+  },
+  "flightshub.com": {
+    "server": "mail.flightshub.com",
+    "port": 993
+  },
+  "maksheso.com": {
+    "server": "mail.maksheso.com",
+    "port": 993
+  },
+  "mairie-saint-louis.re": {
+    "server": "mail.mairie-saint-louis.re",
+    "port": 993
+  },
+  "sharif.edu": {
+    "server": "mail.sharif.edu",
+    "port": 993
+  },
+  "cargarden.pl": {
+    "server": "hosting2553505.online.pro",
+    "port": 993
+  },
+  "chatmister.com": {
+    "server": "mail.chatmister.com",
+    "port": 993
+  },
+  "intheforest.jp": {
+    "server": "mail.intheforest.jp",
+    "port": 993
+  },
+  "klfree.cz": {
+    "server": "mail.klfree.net",
+    "port": 993
+  },
+  "asimomi.jp": {
+    "server": "imap.asimomi.jp",
+    "port": 993
+  },
+  "basico-comunicacion.com": {
+    "server": "mail.basico-comunicacion.com",
+    "port": 993
+  },
+  "credolo.win": {
+    "server": "mail.credolo.win",
+    "port": 993
+  },
+  "armacenter.pl": {
+    "server": "mail.cloud.webcase.pl",
+    "port": 993
+  },
+  "child-village.jp": {
+    "server": "imap.child-village.jp",
+    "port": 993
+  },
+  "giordanoepartners.it": {
+    "server": "mail.giordanoepartners.it",
+    "port": 993
+  },
+  "fmaillerbox.net": {
+    "server": "me.fmaillerbox.net",
+    "port": 993
+  },
+  "exothermic.co.nz": {
+    "server": "mail.exothermic.co.nz",
+    "port": 993
+  },
+  "irt-network.fr": {
+    "server": "mail.irt-network.fr",
+    "port": 993
+  },
+  "ssyomog.im": {
+    "server": "mail.ssyomog.im",
+    "port": 993
+  },
+  "maillv.com": {
+    "server": "mail.maillv.com",
+    "port": 993
+  },
+  "mailme.dk": {
+    "server": "mail.mailme.dk",
+    "port": 993
+  },
+  "prepere.com": {
+    "server": "mail.prepere.com",
+    "port": 993
+  },
+  "callamattressinc.com": {
+    "server": "mail4.austinmichael.com",
+    "port": 993
+  },
+  "sppc-sd.com": {
+    "server": "mail.sppc-sd.com",
+    "port": 993
+  },
+  "grand-vege.co.jp": {
+    "server": "imap.grand-vege.co.jp",
+    "port": 993
+  },
+  "alibank.ltd": {
+    "server": "mail.alibank.ltd",
+    "port": 993
+  },
+  "club-internet.fr": {
+    "server": "imap.club-internet.fr",
+    "port": 993
+  },
+  "nunez.fr": {
+    "server": "mail.nunez.fr",
+    "port": 993
+  },
+  "csie.ntu.edu.tw": {
+    "server": "imap.csie.ntu.edu.tw",
+    "port": 993
+  },
+  "3pass.kr": {
+    "server": "mail.3pass.kr",
+    "port": 993
+  },
+  "zambiapolice.org.zm": {
+    "server": "mail.zambiapolice.org.zm",
+    "port": 993
+  },
+  "fjnseo.com": {
+    "server": "mail.fjnseo.com",
+    "port": 993
+  },
+  "loksi.win": {
+    "server": "mail.loksi.win",
+    "port": 993
+  },
+  "jiechensh.cn": {
+    "server": "hzmx01.mxmail.netease.com",
+    "port": 993
+  },
+  "socialcrab.id": {
+    "server": "mail.socialcrab.id",
+    "port": 993
+  },
+  "marujun-shoji.co.jp": {
+    "server": "imap.marujun-shoji.co.jp",
+    "port": 993
+  },
+  "ucpt.ro": {
+    "server": "mx01.whmpanels.com",
+    "port": 993
+  },
+  "cvrrental.com": {
+    "server": "mail.cvrrental.com",
+    "port": 993
+  },
+  "sleddy.win": {
+    "server": "mail.sleddy.win",
+    "port": 993
+  },
+  "comparegoodshoes.com": {
+    "server": "mail.comparegoodshoes.com",
+    "port": 993
+  },
+  "alum.emoderna.cl": {
+    "server": "mail.alum.emoderna.cl",
+    "port": 993
+  },
+  "arslany.com": {
+    "server": "mail.arslany.com",
+    "port": 993
+  },
+  "crisluk.com": {
+    "server": "mail.crisluk.com",
+    "port": 993
+  },
+  "saplus.jp": {
+    "server": "imap4.muumuu-mail.com",
+    "port": 993
+  },
+  "pumkinsystems.com": {
+    "server": "imap.pumkinsystems.com",
+    "port": 993
+  },
+  "efremails.com": {
+    "server": "mx.efremails.com",
+    "port": 993
+  },
+  "mycp.jp": {
+    "server": "mail3.tsukaeru.ne.jp",
+    "port": 993
+  },
+  "out-mail.net": {
+    "server": "mail.out-mail.net",
+    "port": 993
+  },
+  "dangnbb.com": {
+    "server": "mail.dangnbb.com",
+    "port": 993
+  },
+  "marsatas.lt": {
+    "server": "mail.marsatas.lt",
+    "port": 993
+  },
+  "fpmns.fr": {
+    "server": "mg1.zourit.net",
+    "port": 993
+  },
+  "xtxian.com": {
+    "server": "mail.xtxian.com",
+    "port": 993
+  },
+  "tiskol.win": {
+    "server": "mail.tiskol.win",
+    "port": 993
+  },
+  "znu.ac.ir": {
+    "server": "znu-mail1.znu.ac.ir",
+    "port": 993
+  },
+  "postman.pl": {
+    "server": "mail.best.net.pl",
+    "port": 993
+  },
+  "faitpeterlesite.fr.nf": {
+    "server": "mbox.100ws.com",
+    "port": 993
+  },
+  "fmaillerbox.com": {
+    "server": "mail.fmaillerbox.com",
+    "port": 993
+  },
+  "igienicameridionale.it": {
+    "server": "mail.register.it",
+    "port": 993
+  },
+  "dangmmm.com": {
+    "server": "mail.dangmmm.com",
+    "port": 993
+  },
+  "fasonet.bf": {
+    "server": "fw-filter-edge.fasonet.bf",
+    "port": 993
+  },
+  "tries.co.jp": {
+    "server": "imap.tries.co.jp",
+    "port": 993
+  },
+  "lfcww.org": {
+    "server": "mail.lfcww.org",
+    "port": 993
+  },
+  "kozuk.win": {
+    "server": "mail.kozuk.win",
+    "port": 993
+  },
+  "imstations.com": {
+    "server": "mail.imstations.com",
+    "port": 993
+  },
+  "ethermail.io": {
+    "server": "mail.ethermail.io",
+    "port": 993
+  },
+  "medcare.com.cn": {
+    "server": "mx.ee-post.com",
+    "port": 993
+  },
+  "lutianqiwy.xyz": {
+    "server": "mail.lutianqiwy.xyz",
+    "port": 993
+  },
+  "globalmining.in": {
+    "server": "mail.globalmining.in",
+    "port": 993
+  },
+  "nonprimeonly.online": {
+    "server": "mail.nonprimeonly.online",
+    "port": 993
+  },
+  "chya7566.tech": {
+    "server": "mail.chya7566.tech",
+    "port": 993
+  },
+  "speelotheekhobbelpaard.nl": {
+    "server": "mail.speelotheekhobbelpaard.nl",
+    "port": 993
+  },
+  "ab-bolignet.dk": {
+    "server": "mail.ab-bolignet.dk",
+    "port": 993
+  },
+  "cwpanama.net": {
+    "server": "mail.cwpanama.net",
+    "port": 993
+  },
+  "supmail.win": {
+    "server": "mail.supmail.win",
+    "port": 993
+  },
+  "fuzhumail.fun": {
+    "server": "mail.fuzhumail.fun",
+    "port": 993
+  },
+  "cerrajeriamovil24hs.com.ar": {
+    "server": "mx3.cerrajeriamovil24hs.com.ar",
+    "port": 993
+  },
+  "wowhackgold.com": {
+    "server": "mail.wowhackgold.com",
+    "port": 993
   }
 }

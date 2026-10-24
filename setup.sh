@@ -62,12 +62,19 @@ elif [ ! -f "$CENTRAL_IMAP_DIR/imap_config.json" ]; then
     printf '{}\n' | sudo tee "$CENTRAL_IMAP_DIR/imap_config.json" >/dev/null
 fi
 
+if [ -s "$APP_DIR/imap_unusable.json" ]; then
+    echo "  Seeding /opt/pmj/imap/imap_unusable.json from app repository..."
+    sudo cp "$APP_DIR/imap_unusable.json" "$CENTRAL_IMAP_DIR/imap_unusable.json"
+elif [ ! -f "$CENTRAL_IMAP_DIR/imap_unusable.json" ]; then
+    printf '[]\n' | sudo tee "$CENTRAL_IMAP_DIR/imap_unusable.json" >/dev/null
+fi
+
 if [ -s "$APP_DIR/skip_domains.json" ]; then
     echo "  Seeding /opt/pmj/imap/skip_domains.json from app repository..."
     sudo cp "$APP_DIR/skip_domains.json" "$CENTRAL_IMAP_DIR/skip_domains.json"
 fi
 
-for f in "$APP_DIR/imap_config.json" "$APP_DIR/imap_success.json" \
+for f in "$APP_DIR/imap_config.json" "$APP_DIR/imap_unusable.json" "$APP_DIR/imap_success.json" \
          "$CENTRAL_IMAP_DIR/imap_success.json"; do
     if [ ! -f "$f" ]; then
         printf '{}\n' | sudo tee "$f" >/dev/null

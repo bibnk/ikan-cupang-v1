@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Sync IMAP Master Database across Local & all VPS Nodes.
+Sync IMAP Master Database & Unusable Domains List across Local & all VPS Nodes.
 Two-way synchronization:
-1. Pull new resolved domains from each VPS into Local Master.
-2. Push unified Master database back to any VPS that is behind.
+1. Pull new resolved domains AND unusable/dead domains from each VPS into Local Master.
+2. Push unified Master databases back to any VPS that is behind.
 3. Reload/restart services safely.
 """
 
@@ -11,7 +11,6 @@ import os
 import sys
 import json
 import shutil
-import datetime
 from concurrent.futures import ThreadPoolExecutor
 
 try:
@@ -23,14 +22,23 @@ except ImportError:
     import paramiko
 
 # Paths
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-LOCAL_MASTER_PATH = os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap", "imap_config.json")
-LOCAL_FALLBACK_PATH = os.path.join(os.path.expanduser("~"), "ikan cupang v1", "imap_config.json")
-NODES_CONFIG_PATH = os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap", "vps_nodes.json")
+LOCAL_MASTER_DIR = os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap")
+LOCAL_MASTER_CONFIG = os.path.join(LOCAL_MASTER_DIR, "imap_config.json")
+LOCAL_MASTER_UNUSABLE = os.path.join(LOCAL_MASTER_DIR, "imap_unusable.json")
 
-REMOTE_PATHS = [
+REPO_DIR = os.path.join(os.path.expanduser("~"), "ikan cupang v1")
+REPO_CONFIG = os.path.join(REPO_DIR, "imap_config.json")
+REPO_UNUSABLE = os.path.join(REPO_DIR, "imap_unusable.json")
+
+NODES_CONFIG_PATH = os.path.join(LOCAL_MASTER_DIR, "vps_nodes.json")
+
+REMOTE_CONFIG_PATHS = [
     "/opt/pmj/imap/imap_config.json",
     "/opt/imap-checker/imap_config.json",
+]
+REMOTE_UNUSABLE_PATHS = [
+    "/opt/pmj/imap/imap_unusable.json",
+    "/opt/imap-checker/imap_unusable.json",
 ]
 
 DEFAULT_NODES = [
@@ -46,68 +54,80 @@ def load_nodes():
                 return json.load(f)
         except Exception as e:
             print(f"[!] Error reading {NODES_CONFIG_PATH}: {e}")
-    # Write default if not exists
     os.makedirs(os.path.dirname(NODES_CONFIG_PATH), exist_ok=True)
     with open(NODES_CONFIG_PATH, "w", encoding="utf-8") as f:
         json.dump(DEFAULT_NODES, f, indent=2)
     return DEFAULT_NODES
 
 
-def load_local_master():
-    if os.path.exists(LOCAL_MASTER_PATH):
-        try:
-            with open(LOCAL_MASTER_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    if os.path.exists(LOCAL_FALLBACK_PATH):
-        try:
-            with open(LOCAL_FALLBACK_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return {}
+def load_local_json(path, fallback_path=None, default=None):
+    if default is None:
+        default = {}
+    for p in [path, fallback_path]:
+        if p and os.path.exists(p):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
+    return default
 
 
-def save_local_master(master_dict):
-    os.makedirs(os.path.dirname(LOCAL_MASTER_PATH), exist_ok=True)
-    # Write atomic tmp
-    tmp = LOCAL_MASTER_PATH + ".tmp"
+def save_atomic_json(path, data, fallback_path=None):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(master_dict, f, indent=2, ensure_ascii=False)
+        json.dump(data, f, indent=2, ensure_ascii=False)
         f.flush()
         os.fsync(f.fileno())
-    os.replace(tmp, LOCAL_MASTER_PATH)
-
-    # Sync to local repo fallback if exists
-    if os.path.exists(os.path.dirname(LOCAL_FALLBACK_PATH)):
+    os.replace(tmp, path)
+    if fallback_path and os.path.exists(os.path.dirname(fallback_path)):
         try:
-            shutil.copy(LOCAL_MASTER_PATH, LOCAL_FALLBACK_PATH)
+            shutil.copy(path, fallback_path)
         except Exception:
             pass
 
 
-def fetch_node_config(node):
+def fetch_node_data(node):
     host = node["host"]
     user = node.get("user", "root")
     password = node.get("pass", "")
     port = node.get("port", 22)
     name = node.get("name", host)
 
-    result = {"node": node, "name": name, "host": host, "remote_data": {}, "error": None}
+    result = {
+        "node": node,
+        "name": name,
+        "host": host,
+        "remote_configs": {},
+        "remote_unusable": set(),
+        "error": None
+    }
 
     try:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(host, port=port, username=user, password=password, timeout=12)
-
         sftp = ssh.open_sftp()
-        for rp in REMOTE_PATHS:
+
+        # 1. Fetch imap_config.json
+        for rp in REMOTE_CONFIG_PATHS:
             try:
                 with sftp.open(rp, "r") as f:
                     data = json.load(f)
                     if data:
-                        result["remote_data"] = data
+                        result["remote_configs"] = data
+                        break
+            except Exception:
+                continue
+
+        # 2. Fetch imap_unusable.json
+        for rp in REMOTE_UNUSABLE_PATHS:
+            try:
+                with sftp.open(rp, "r") as f:
+                    data = json.load(f)
+                    if data:
+                        result["remote_unusable"] = set(data if isinstance(data, list) else data.keys())
                         break
             except Exception:
                 continue
@@ -120,7 +140,7 @@ def fetch_node_config(node):
     return result
 
 
-def push_node_config(node, master_dict):
+def push_node_data(node, master_configs, master_unusable):
     host = node["host"]
     user = node.get("user", "root")
     password = node.get("pass", "")
@@ -133,25 +153,34 @@ def push_node_config(node, master_dict):
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(host, port=port, username=user, password=password, timeout=12)
-
         sftp = ssh.open_sftp()
-        # Upload via memory buffer
-        json_bytes = json.dumps(master_dict, indent=2, ensure_ascii=False).encode("utf-8")
 
-        for rp in REMOTE_PATHS:
+        cfg_bytes = json.dumps(master_configs, indent=2, ensure_ascii=False).encode("utf-8")
+        unusable_bytes = json.dumps(sorted(list(master_unusable)), indent=2, ensure_ascii=False).encode("utf-8")
+
+        for rp in REMOTE_CONFIG_PATHS:
             try:
-                # Ensure parent dir exists
                 pdir = os.path.dirname(rp)
                 ssh.exec_command(f"mkdir -p {pdir}")
                 with sftp.open(rp + ".tmp", "w") as f:
-                    f.write(json_bytes)
+                    f.write(cfg_bytes)
+                ssh.exec_command(f"mv {rp}.tmp {rp}")
+            except Exception:
+                continue
+
+        for rp in REMOTE_UNUSABLE_PATHS:
+            try:
+                pdir = os.path.dirname(rp)
+                ssh.exec_command(f"mkdir -p {pdir}")
+                with sftp.open(rp + ".tmp", "w") as f:
+                    f.write(unusable_bytes)
                 ssh.exec_command(f"mv {rp}.tmp {rp}")
             except Exception:
                 continue
 
         sftp.close()
 
-        # Fix ownership and restart service if present
+        # Permissions and service restart
         fix_cmd = """
         if id imapchecker >/dev/null 2>&1; then
             chown -R imapchecker:imapchecker /opt/pmj/imap /opt/imap-checker 2>/dev/null || true
@@ -170,24 +199,27 @@ def push_node_config(node, master_dict):
 
 
 def main():
-    print("=" * 65)
+    print("=" * 70)
     print(" 🌐 IMAP MASTER DATABASE — TWO-WAY MULTI-SERVER SYNC")
-    print("=" * 65)
+    print("=" * 70)
 
     nodes = load_nodes()
     print(f"[*] Loaded {len(nodes)} target node(s) from vps_nodes.json")
 
-    local_master = load_local_master()
-    initial_count = len(local_master)
-    print(f"[*] Current Local Master entries: {initial_count:,} domains\n")
+    local_configs = load_local_json(LOCAL_MASTER_CONFIG, REPO_CONFIG, default={})
+    local_unusable_raw = load_local_json(LOCAL_MASTER_UNUSABLE, REPO_UNUSABLE, default=[])
+    local_unusable = set(local_unusable_raw if isinstance(local_unusable_raw, list) else local_unusable_raw.keys())
+
+    print(f"[*] Local Master: {len(local_configs):,} valid configs | {len(local_unusable):,} unusable/dead domains\n")
 
     # Step 1: PULL from all nodes
-    print("--- [1/3] PULLING NEW CONFIGS FROM ALL VPS NODES ---")
-    fetched_results = []
+    print("--- [1/3] PULLING NEW DATA FROM ALL VPS NODES ---")
     with ThreadPoolExecutor(max_workers=len(nodes) or 1) as pool:
-        fetched_results = list(pool.map(fetch_node_config, nodes))
+        fetched_results = list(pool.map(fetch_node_data, nodes))
 
-    total_pulled = 0
+    pulled_configs = 0
+    pulled_unusable = 0
+
     for res in fetched_results:
         name = res["name"]
         host = res["host"]
@@ -195,27 +227,32 @@ def main():
             print(f"  ❌ [{name}] ({host}): Offline / Error: {res['error']}")
             continue
 
-        rdata = res["remote_data"]
-        rcount = len(rdata)
-        new_keys = set(rdata.keys()) - set(local_master.keys())
-        if new_keys:
-            for k in new_keys:
-                local_master[k] = rdata[k]
-            total_pulled += len(new_keys)
-            print(f"  📥 [{name}] ({host}): {rcount:,} entries (+{len(new_keys)} NEW domain(s) pulled)")
-        else:
-            print(f"  ✔️  [{name}] ({host}): {rcount:,} entries (Up-to-date or subset)")
+        r_cfg = res["remote_configs"]
+        r_unusable = res["remote_unusable"]
 
-    final_count = len(local_master)
-    print(f"\n[*] Total new domain(s) merged into Local Master: +{total_pulled}")
-    print(f"[*] Unified Local Master now has: {final_count:,} domains\n")
+        new_cfg_keys = set(r_cfg.keys()) - set(local_configs.keys())
+        if new_cfg_keys:
+            for k in new_cfg_keys:
+                local_configs[k] = r_cfg[k]
+            pulled_configs += len(new_cfg_keys)
+
+        new_unusable_keys = r_unusable - local_unusable
+        if new_unusable_keys:
+            local_unusable.update(new_unusable_keys)
+            pulled_unusable += len(new_unusable_keys)
+
+        print(f"  📥 [{name}] ({host}): {len(r_cfg):,} valid (+{len(new_cfg_keys)}) | {len(r_unusable):,} unusable (+{len(new_unusable_keys)})")
+
+    print(f"\n[*] Total new valid configs pulled: +{pulled_configs}")
+    print(f"[*] Total new unusable domains pulled: +{pulled_unusable}")
+    print(f"[*] Unified Local Master: {len(local_configs):,} valid | {len(local_unusable):,} unusable\n")
 
     # Step 2: SAVE LOCAL MASTER
-    if total_pulled > 0:
-        save_local_master(local_master)
-        print(f"--- [2/3] SAVED LOCAL MASTER ({final_count:,} domains) ---")
-    else:
-        print("--- [2/3] LOCAL MASTER ALREADY SYNCHRONIZED ---")
+    if pulled_configs > 0:
+        save_atomic_json(LOCAL_MASTER_CONFIG, local_configs, REPO_CONFIG)
+    if pulled_unusable > 0:
+        save_atomic_json(LOCAL_MASTER_UNUSABLE, sorted(list(local_unusable)), REPO_UNUSABLE)
+    print("--- [2/3] SAVED LOCAL MASTER DATABASES ---")
 
     # Step 3: PUSH UNIFIED MASTER TO NODES
     print("\n--- [3/3] PUSHING UNIFIED MASTER TO NODES ---")
@@ -223,29 +260,30 @@ def main():
     for res in fetched_results:
         if res["error"]:
             continue
-        rcount = len(res["remote_data"])
-        if rcount < final_count:
-            nodes_to_update.append((res["node"], final_count - rcount))
+        cfg_diff = len(local_configs) - len(res["remote_configs"])
+        unusable_diff = len(local_unusable) - len(res["remote_unusable"])
+        if cfg_diff > 0 or unusable_diff > 0:
+            nodes_to_update.append((res["node"], cfg_diff, unusable_diff))
         else:
-            print(f"  ✔️  [{res['name']}] already has complete {final_count:,} domains (Skipping push)")
+            print(f"  ✔️  [{res['name']}] already 100% in sync (Skipping push)")
 
     if not nodes_to_update:
         print("  🎉 All reachable VPS nodes are already 100% in sync!")
     else:
         with ThreadPoolExecutor(max_workers=len(nodes_to_update) or 1) as pool:
-            push_results = list(pool.map(lambda item: push_node_config(item[0], local_master), nodes_to_update))
+            push_results = list(pool.map(lambda item: push_node_data(item[0], local_configs, local_unusable), nodes_to_update))
 
-        for (node, diff), pres in zip(nodes_to_update, push_results):
+        for (node, cdiff, udiff), pres in zip(nodes_to_update, push_results):
             name = pres["name"]
             host = pres["host"]
             if pres["updated"]:
-                print(f"  📤 [{name}] ({host}): Successfully PUSHED unified DB (+{diff} domains added, service reloaded)")
+                print(f"  📤 [{name}] ({host}): Successfully PUSHED (+{cdiff} configs, +{udiff} unusable, service reloaded)")
             else:
                 print(f"  ❌ [{name}] ({host}): Push failed: {pres['error']}")
 
-    print("\n" + "=" * 65)
-    print(f" ✅ SYNC FINISHED: Master Database has {final_count:,} active IMAP domains.")
-    print("=" * 65)
+    print("\n" + "=" * 70)
+    print(f" ✅ SYNC FINISHED: Unified Master has {len(local_configs):,} valid & {len(local_unusable):,} unusable domains.")
+    print("=" * 70)
 
 
 if __name__ == "__main__":

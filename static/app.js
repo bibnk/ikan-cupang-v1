@@ -1140,14 +1140,19 @@
         document.body.appendChild(modal);
         document.body.style.overflow = "hidden";
 
-        function closeModal() {
+        function closeModalAndResolveBg() {
             modal.remove();
             document.body.style.overflow = "";
+            // Trigger background resolve so domains are saved to DB even if user declines checking accounts
+            fetch(APP_BASE + "/api/resolve-unreg-bg/" + jobId, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            }).catch(function () {});
         }
 
-        modal.querySelector("#unreg-close-btn").addEventListener("click", closeModal);
-        modal.querySelector(".ge-modal-backdrop").addEventListener("click", closeModal);
-        modal.querySelector("#unreg-cancel-btn").addEventListener("click", closeModal);
+        modal.querySelector("#unreg-close-btn").addEventListener("click", closeModalAndResolveBg);
+        modal.querySelector(".ge-modal-backdrop").addEventListener("click", closeModalAndResolveBg);
+        modal.querySelector("#unreg-cancel-btn").addEventListener("click", closeModalAndResolveBg);
 
         var confirmBtn = modal.querySelector("#unreg-confirm-btn");
         var cancelBtn = modal.querySelector("#unreg-cancel-btn");

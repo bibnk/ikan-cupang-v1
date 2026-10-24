@@ -19,6 +19,22 @@ if not os.path.isdir(IMAP_DB_DIR):
 
 IMAP_CONFIG_PATH = os.path.join(IMAP_DB_DIR, "imap_config.json")
 IMAP_SUCCESS_PATH = os.path.join(IMAP_DB_DIR, "imap_success.json")
+IMAP_UNUSABLE_PATH = os.path.join(IMAP_DB_DIR, "imap_unusable.json")
+
+# Load unusable / dead / oauth domains (cegah double work cek berulang)
+DEFAULT_IMAP_UNUSABLE = set()
+_local_unusable_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imap_unusable.json")
+for _up in [IMAP_UNUSABLE_PATH, _local_unusable_path]:
+    if os.path.exists(_up):
+        try:
+            with open(_up, "r", encoding="utf-8") as _f:
+                _raw = json.load(_f)
+                if isinstance(_raw, list):
+                    DEFAULT_IMAP_UNUSABLE.update(_raw)
+                elif isinstance(_raw, dict):
+                    DEFAULT_IMAP_UNUSABLE.update(_raw.keys())
+        except Exception:
+            pass
 
 # Load config: prioritaskan central database, fallback ke local repo jika kosong
 DEFAULT_IMAP_CONFIG = {}
@@ -351,6 +367,9 @@ def map_mx_to_imap(mx_host, domain=None):
     if "muumuu-mail.com" in m:
         return {"server": "imap4.muumuu-mail.com", "port": 993}
 
+    if domain and is_unusable_domain(domain):
+        return None
+
     # Custom MX: MUST pass real IMAP banner check (* OK without LOGINDISABLED)
     if verify_usable_imap(mx_host, 993):
         return {"server": mx_host, "port": 993}
@@ -360,6 +379,56 @@ def map_mx_to_imap(mx_host, domain=None):
         if verify_usable_imap(f"imap.{domain}", 993):
             return {"server": f"imap.{domain}", "port": 993}
     return None
+
+
+def load_imap_unusable():
+    """Load latest set of unusable / dead domains."""
+    res = set(DEFAULT_IMAP_UNUSABLE)
+    if os.path.exists(IMAP_UNUSABLE_PATH):
+        try:
+            with open(IMAP_UNUSABLE_PATH, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                res.update(d if isinstance(d, list) else d.keys())
+        except Exception:
+            pass
+    return res
+
+
+def is_unusable_domain(domain):
+    """Check if domain is known unusable (no MX / dead / OAuth only)."""
+    if not domain:
+        return False
+    d = domain.lower().strip()
+    return d in DEFAULT_IMAP_UNUSABLE or d in load_imap_unusable()
+
+
+def save_master_unusable_domains(domains):
+    """Atomically append new unusable domains to imap_unusable.json."""
+    if not domains:
+        return
+    current = load_imap_unusable()
+    before_len = len(current)
+    current.update(d.lower().strip() for d in domains if d and isinstance(d, str) and d.strip())
+    DEFAULT_IMAP_UNUSABLE.update(current)
+    if len(current) == before_len and os.path.exists(IMAP_UNUSABLE_PATH):
+        return
+    unusable_list = sorted(list(current))
+    tmp_path = IMAP_UNUSABLE_PATH + ".tmp"
+    try:
+        os.makedirs(os.path.dirname(IMAP_UNUSABLE_PATH), exist_ok=True)
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(unusable_list, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, IMAP_UNUSABLE_PATH)
+    except Exception:
+        pass
+    if _local_unusable_path != IMAP_UNUSABLE_PATH and os.path.exists(os.path.dirname(_local_unusable_path)):
+        try:
+            with open(_local_unusable_path, "w", encoding="utf-8") as f:
+                json.dump(unusable_list, f, indent=2, ensure_ascii=False)
+        except Exception:
+            pass
 
 
 def save_master_imap_configs(new_configs):

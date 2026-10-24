@@ -658,6 +658,11 @@ class ImapChecker:
         # State
         self.unreg_domains = set()
         self.imap_success_config = self._load_imap_success_config()
+        try:
+            from imap_config import load_imap_unusable
+            self.unusable_domains = load_imap_unusable()
+        except Exception:
+            self.unusable_domains = set()
 
         # Skip-domains snapshot for this job (Requirement 5.1, 5.3).
         # Loaded BEFORE any worker thread is spawned in run() so the snapshot
@@ -1076,6 +1081,14 @@ class ImapChecker:
                 queue.task_done()
                 continue
 
+            # Check if domain is known unusable (dead / oauth / gateway)
+            if domain in self.unusable_domains:
+                self._write_unreg(domain)
+                self._write_unreg_account(email_addr, password)
+                self._update_progress("unreg")
+                queue.task_done()
+                continue
+
             # Get IMAP config (with parent domain fallback)
             with self.imap_config_lock:
                 extra = self.imap_success_config
@@ -1092,6 +1105,7 @@ class ImapChecker:
                     imap_cfg = result
                     configs[domain] = result
                 else:
+                    self.unusable_domains.add(domain)
                     self._write_unreg(domain)
                     self._write_unreg_account(email_addr, password)
                     self._update_progress("unreg")
