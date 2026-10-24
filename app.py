@@ -423,14 +423,21 @@ def download_file(job_id, file_type):
 @login_required
 def resolve_unreg_job(job_id):
     cleanup_expired_jobs()
+    results_dir = os.path.join(JOBS_DIR, job_id)
     jdata = jobs.get(job_id)
-    if not jdata:
+    if not jdata and os.path.isdir(results_dir):
+        # Fallback load dari disk jika service sempat restart
+        jdata = {
+            "owner": session.get("code_hash", ""),
+            "owner_label": session.get("user_label", "unknown"),
+            "checker": None,
+        }
+    elif not jdata:
         return jsonify({"error": "Job tidak ditemukan"}), 404
+
     user_hash = session.get("code_hash", "")
     if not session.get("is_admin") and jdata.get("owner") != user_hash:
         return jsonify({"error": "Unauthorized"}), 403
-
-    results_dir = os.path.join(JOBS_DIR, job_id)
     unreg_acc_file = os.path.join(results_dir, "unreg_accounts.txt")
     unreg_dom_file = os.path.join(results_dir, "unreg.txt")
 
