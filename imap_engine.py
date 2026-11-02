@@ -1083,9 +1083,8 @@ class ImapChecker:
 
             # Check if domain is known unusable (dead / oauth / gateway)
             if domain in self.unusable_domains:
-                self._write_unreg(domain)
-                self._write_unreg_account(email_addr, password)
-                self._update_progress("unreg")
+                self._write_domain_skip(email_addr, password)
+                self._update_progress("skipped")
                 queue.task_done()
                 continue
 

@@ -126,34 +126,45 @@ def lookup_imap_config(domain, extra_configs=None):
     """
     Cari IMAP config untuk domain dengan fallback ke parent domain.
     """
+    if is_unusable_domain(domain):
+        return None
+
     configs = DEFAULT_IMAP_CONFIG
 
-    cfg = configs.get(domain)
+    def _valid(c):
+        if not c or not isinstance(c, dict):
+            return None
+        srv = str(c.get("server", "")).lower()
+        if any(kw in srv for kw in DISALLOWED_MX_KEYWORDS):
+            return None
+        return c
+
+    cfg = _valid(configs.get(domain))
     if cfg:
         return cfg
 
     if extra_configs:
-        cfg = extra_configs.get(domain)
+        cfg = _valid(extra_configs.get(domain))
         if cfg:
             return cfg
 
     parent = _get_parent_domain(domain)
-    if parent:
-        cfg = configs.get(parent)
+    if parent and not is_unusable_domain(parent):
+        cfg = _valid(configs.get(parent))
         if cfg:
             return cfg
         if extra_configs:
-            cfg = extra_configs.get(parent)
+            cfg = _valid(extra_configs.get(parent))
             if cfg:
                 return cfg
 
         grandparent = _get_parent_domain(parent)
-        if grandparent:
-            cfg = configs.get(grandparent)
+        if grandparent and not is_unusable_domain(grandparent):
+            cfg = _valid(configs.get(grandparent))
             if cfg:
                 return cfg
             if extra_configs:
-                cfg = extra_configs.get(grandparent)
+                cfg = _valid(extra_configs.get(grandparent))
                 if cfg:
                     return cfg
 

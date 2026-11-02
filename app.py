@@ -658,10 +658,10 @@ def resolve_unreg_job(job_id):
     if unusable_domains:
         save_master_unusable_domains(unusable_domains)
 
-    # Filter akun: HANYA akun yang berhubungan dengan unreg dan domainnya berhasil di-resolve
+    # Filter akun: HANYA akun yang berhubungan dengan domain yang BARU BERHASIL di-resolve
     checking_accounts = [
         a for a in accounts
-        if lookup_imap_config(a["email"].split("@")[-1].lower(), extra_configs=new_configs)
+        if a["email"].split("@")[-1].lower() in new_configs
     ]
 
     if not checking_accounts:
