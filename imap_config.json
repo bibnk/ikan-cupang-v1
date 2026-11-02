@@ -120525,5 +120525,2337 @@
   "zen-2000.co.jp": {
     "server": "mail.zen-2000.co.jp",
     "port": 993
+  },
+  "neoilfield.com": {
+    "server": "imap.neoilfield.com",
+    "port": 993
+  },
+  "valuehoodgift.com": {
+    "server": "imap.valuehoodgift.com",
+    "port": 993
+  },
+  "bespokeitalia.ae": {
+    "server": "imap.bespokeitalia.ae",
+    "port": 993
+  },
+  "masar-sahra.com": {
+    "server": "imap.masar-sahra.com",
+    "port": 993
+  },
+  "216-booking.com": {
+    "server": "imap.216-booking.com",
+    "port": 993
+  },
+  "nadalpiantini.com": {
+    "server": "imap.nadalpiantini.com",
+    "port": 993
+  },
+  "emoraclinic.com": {
+    "server": "imap.emoraclinic.com",
+    "port": 993
+  },
+  "invision.gr": {
+    "server": "imap.invision.gr",
+    "port": 993
+  },
+  "acedss3.com": {
+    "server": "imap.acedss3.com",
+    "port": 993
+  },
+  "oqatawellness.com": {
+    "server": "imap.oqatawellness.com",
+    "port": 143
+  },
+  "deviant2dream.dog": {
+    "server": "imap.deviant2dream.dog",
+    "port": 993
+  },
+  "spgtalleres.com": {
+    "server": "imap.spgtalleres.com",
+    "port": 993
+  },
+  "jump-boxx.com": {
+    "server": "imap.jump-boxx.com",
+    "port": 993
+  },
+  "edgroup.ae": {
+    "server": "imap.edgroup.ae",
+    "port": 993
+  },
+  "justice.gr": {
+    "server": "imap.justice.gr",
+    "port": 993
+  },
+  "finallub.com": {
+    "server": "imap.finallub.com",
+    "port": 993
+  },
+  "zouzoudubai.com": {
+    "server": "imap.zouzoudubai.com",
+    "port": 993
+  },
+  "gtconsult.com.sa": {
+    "server": "imap.gtconsult.com.sa",
+    "port": 993
+  },
+  "coop-oliva.com.ar": {
+    "server": "mail.coop-oliva.com.ar",
+    "port": 993
+  },
+  "primexgcc.com": {
+    "server": "imap.primexgcc.com",
+    "port": 993
+  },
+  "luckcn.cc": {
+    "server": "imap.luckcn.cc",
+    "port": 993
+  },
+  "kikou-group.com": {
+    "server": "imap.kikou-group.com",
+    "port": 993
+  },
+  "webflyer.co.za": {
+    "server": "imap.webflyer.co.za",
+    "port": 993
+  },
+  "johannsvirginhair.com": {
+    "server": "imap.johannsvirginhair.com",
+    "port": 993
+  },
+  "murchisonriverlodge.com": {
+    "server": "imap.murchisonriverlodge.com",
+    "port": 993
+  },
+  "virros.com": {
+    "server": "mail.virros.com",
+    "port": 993
+  },
+  "mail.tele.dk": {
+    "port": 993,
+    "server": "imap.mail.dk"
+  },
+  "prtc.net": {
+    "server": "imap.prtc.net",
+    "port": 143
+  },
+  "expert-talents.net": {
+    "server": "imap.expert-talents.net",
+    "port": 993
+  },
+  "effitrans.sn": {
+    "server": "imap.effitrans.sn",
+    "port": 993
+  },
+  "atlas-agri.com": {
+    "server": "imap.atlas-agri.com",
+    "port": 993
+  },
+  "bhmproperties.net": {
+    "server": "imap.bhmproperties.net",
+    "port": 993
+  },
+  "gmaremi.com": {
+    "server": "imap.gmaremi.com",
+    "port": 993
+  },
+  "kamilianie.eu": {
+    "server": "imap.kamilianie.eu",
+    "port": 993
+  },
+  "hahest-ksa.com": {
+    "server": "imap.hahest-ksa.com",
+    "port": 993
+  },
+  "abraljwdah.com": {
+    "server": "imap.abraljwdah.com",
+    "port": 993
+  },
+  "stonewoodlandmark.com": {
+    "server": "imap.stonewoodlandmark.com",
+    "port": 993
+  },
+  "santoriniproperties.ae": {
+    "server": "imap.santoriniproperties.ae",
+    "port": 993
+  },
+  "flyaway1.com": {
+    "server": "imap.flyaway1.com",
+    "port": 993
+  },
+  "ucreseller.co.uk": {
+    "server": "imap.ucreseller.co.uk",
+    "port": 993
+  },
+  "danieljs.dk": {
+    "server": "mail.danieljs.dk",
+    "port": 993
+  },
+  "josy.me": {
+    "server": "imap.josy.me",
+    "port": 993
+  },
+  "itpec.it": {
+    "server": "mail.itpec.it",
+    "port": 993
+  },
+  "dunkirkfencing.co.uk": {
+    "server": "imap.dunkirkfencing.co.uk",
+    "port": 993
+  },
+  "pioneertravel.net": {
+    "server": "imap.pioneertravel.net",
+    "port": 993
+  },
+  "rajon-cm.com": {
+    "server": "imap.rajon-cm.com",
+    "port": 993
+  },
+  "alrakigroup.com": {
+    "server": "imap.alrakigroup.com",
+    "port": 993
+  },
+  "burcogeneralsuppliers.com": {
+    "server": "imap.burcogeneralsuppliers.com",
+    "port": 993
+  },
+  "globalcargologistics.com": {
+    "server": "imap.globalcargologistics.com",
+    "port": 993
+  },
+  "lasmanosdeluna.com": {
+    "server": "imap.lasmanosdeluna.com",
+    "port": 993
+  },
+  "osai.org.ar": {
+    "server": "mail.osai.org.ar",
+    "port": 993
+  },
+  "apei73aix.org": {
+    "server": "mail.apei73aix.org",
+    "port": 993
+  },
+  "yallavending.com": {
+    "server": "imap.yallavending.com",
+    "port": 993
+  },
+  "sch.gr": {
+    "server": "mail.sch.gr",
+    "port": 993
+  },
+  "elrabi3.com": {
+    "server": "mail.elrabi3.com",
+    "port": 993
+  },
+  "imronmahmud.com": {
+    "server": "mail.imronmahmud.com",
+    "port": 993
+  },
+  "strektech.com": {
+    "server": "imap.strektech.com",
+    "port": 993
+  },
+  "flyverlogistic.com": {
+    "server": "imap.flyverlogistic.com",
+    "port": 993
+  },
+  "idp.uk.com": {
+    "port": 993,
+    "server": "imap.clara.net"
+  },
+  "4alternatywy.com": {
+    "server": "imap.4alternatywy.com",
+    "port": 993
+  },
+  "blulemigas.com": {
+    "server": "mail.blulemigas.com",
+    "port": 993
+  },
+  "thetechnocorp.com": {
+    "server": "imap.thetechnocorp.com",
+    "port": 993
+  },
+  "krishpar.com": {
+    "server": "imap.krishpar.com",
+    "port": 993
+  },
+  "swiftconsultants.co.za": {
+    "server": "imap.swiftconsultants.co.za",
+    "port": 993
+  },
+  "uaaan.mx": {
+    "server": "imap.uaaan.mx",
+    "port": 143
+  },
+  "susess.com": {
+    "server": "imap.susess.com",
+    "port": 993
+  },
+  "makinwaves.nl": {
+    "server": "imap.makinwaves.nl",
+    "port": 993
+  },
+  "dslgroup.com.sg": {
+    "server": "imap.dslgroup.com.sg",
+    "port": 993
+  },
+  "canal4pergamino.com.ar": {
+    "server": "imap.canal4pergamino.com.ar",
+    "port": 993
+  },
+  "scdesign.ro": {
+    "server": "mail.scdesign.ro",
+    "port": 993
+  },
+  "famagrp.com": {
+    "server": "imap.famagrp.com",
+    "port": 993
+  },
+  "riyadh-alkhozamah.com": {
+    "server": "imap.riyadh-alkhozamah.com",
+    "port": 993
+  },
+  "alwisam.sa": {
+    "server": "imap.alwisam.sa",
+    "port": 993
+  },
+  "drsora.at": {
+    "server": "imap.drsora.at",
+    "port": 993
+  },
+  "funscapes.net": {
+    "server": "imap.funscapes.net",
+    "port": 993
+  },
+  "tathmeer.com": {
+    "server": "imap.tathmeer.com",
+    "port": 993
+  },
+  "talkcustomertalk.com": {
+    "server": "mail.talkcustomertalk.com",
+    "port": 993
+  },
+  "automatismostecsia.com": {
+    "server": "mail.automatismostecsia.com",
+    "port": 993
+  },
+  "ktechengineering.com": {
+    "server": "imap.ktechengineering.com",
+    "port": 993
+  },
+  "amspareparts.com": {
+    "server": "imap.amspareparts.com",
+    "port": 993
+  },
+  "meilerims.com": {
+    "server": "imap.meilerims.com",
+    "port": 993
+  },
+  "albrain-consulting.com": {
+    "server": "imap.albrain-consulting.com",
+    "port": 993
+  },
+  "bryair.com.ph": {
+    "server": "imap.bryair.com.ph",
+    "port": 993
+  },
+  "vallcosynergy.com.sg": {
+    "server": "imap.vallcosynergy.com.sg",
+    "port": 993
+  },
+  "sultengprov.go.id": {
+    "server": "mail.sultengprov.go.id",
+    "port": 993
+  },
+  "unicarebh.com": {
+    "server": "imap.unicarebh.com",
+    "port": 993
+  },
+  "alnakheelclinic.com": {
+    "server": "imap.alnakheelclinic.com",
+    "port": 993
+  },
+  "circularbus.com": {
+    "server": "imap.circularbus.com",
+    "port": 993
+  },
+  "simer.cl": {
+    "server": "mail.simer.cl",
+    "port": 993
+  },
+  "bog.com.vn": {
+    "server": "imap.bog.com.vn",
+    "port": 993
+  },
+  "milagrosdeesperanza.com": {
+    "server": "mail.milagrosdeesperanza.com",
+    "port": 993
+  },
+  "adamawamortgagebank.com.ng": {
+    "server": "imap.adamawamortgagebank.com.ng",
+    "port": 993
+  },
+  "ralynda.com": {
+    "server": "mail.ralynda.com",
+    "port": 993
+  },
+  "cpecc.sa": {
+    "server": "imap.cpecc.sa",
+    "port": 993
+  },
+  "room70.co": {
+    "server": "imap.room70.co",
+    "port": 993
+  },
+  "cemglobalsolutions.com": {
+    "server": "imap.cemglobalsolutions.com",
+    "port": 993
+  },
+  "advancecare-sa.com": {
+    "server": "imap.advancecare-sa.com",
+    "port": 993
+  },
+  "cypreamarinefoods.com": {
+    "server": "mail.cypreamarinefoods.com",
+    "port": 993
+  },
+  "3xp-productions.com": {
+    "server": "imap.3xp-productions.com",
+    "port": 993
+  },
+  "9173.gotoc.cc": {
+    "server": "imap.9173.gotoc.cc",
+    "port": 993
+  },
+  "mortgagepro360.net": {
+    "server": "mail.mortgagepro360.net",
+    "port": 993
+  },
+  "two-wires.com": {
+    "server": "imap.two-wires.com",
+    "port": 993
+  },
+  "setm.co.ao": {
+    "server": "imap.setm.co.ao",
+    "port": 993
+  },
+  "iyfilmlocations.com": {
+    "server": "imap.iyfilmlocations.com",
+    "port": 993
+  },
+  "nordtroms.net": {
+    "server": "imap.nordtroms.net",
+    "port": 993
+  },
+  "platinum-com.com": {
+    "server": "imap.platinum-com.com",
+    "port": 993
+  },
+  "classictravels.com.sa": {
+    "server": "imap.classictravels.com.sa",
+    "port": 993
+  },
+  "timetravelgroups.com": {
+    "server": "imap.timetravelgroups.com",
+    "port": 993
+  },
+  "8866jianan.online": {
+    "server": "mail.8866jianan.online",
+    "port": 143
+  },
+  "microhealthcare.com": {
+    "server": "imap.microhealthcare.com",
+    "port": 993
+  },
+  "ire-music.com": {
+    "server": "imap.ire-music.com",
+    "port": 993
+  },
+  "alfa.mk": {
+    "server": "mail.alfa.mk",
+    "port": 993
+  },
+  "sediaenterprises.com": {
+    "server": "imap.sediaenterprises.com",
+    "port": 993
+  },
+  "grupoidchn.com": {
+    "server": "imap.grupoidchn.com",
+    "port": 993
+  },
+  "nptdc.gov.mm": {
+    "server": "mail.nptdc.gov.mm",
+    "port": 993
+  },
+  "fasaec.cd": {
+    "server": "mail.fasaec.cd",
+    "port": 993
+  },
+  "schoolaviationtraining.com": {
+    "server": "mail.schoolaviationtraining.com",
+    "port": 993
+  },
+  "matineecoffee.com": {
+    "server": "mail.matineecoffee.com",
+    "port": 993
+  },
+  "seldatasolutions.com": {
+    "server": "mail.seldatasolutions.com",
+    "port": 993
+  },
+  "saudeonline.pt": {
+    "server": "mail.saudeonline.pt",
+    "port": 993
+  },
+  "cdstechno.com": {
+    "server": "mail.cdstechno.com",
+    "port": 993
+  },
+  "codesynergix.com": {
+    "server": "imap.codesynergix.com",
+    "port": 993
+  },
+  "compasss.co.uk": {
+    "server": "imap.compasss.co.uk",
+    "port": 993
+  },
+  "saunders-appraisal.com": {
+    "server": "imap.saunders-appraisal.com",
+    "port": 993
+  },
+  "biso.co.in": {
+    "server": "imap.biso.co.in",
+    "port": 993
+  },
+  "jamesflowerdew.com": {
+    "server": "imap.jamesflowerdew.com",
+    "port": 993
+  },
+  "netsol.co.za": {
+    "server": "imap.netsol.co.za",
+    "port": 993
+  },
+  "quickship.co.tz": {
+    "server": "imap.quickship.co.tz",
+    "port": 993
+  },
+  "corund.ro": {
+    "server": "mail.corund.ro",
+    "port": 993
+  },
+  "frankhand.co.uk": {
+    "server": "imap.frankhand.co.uk",
+    "port": 993
+  },
+  "progression.co.za": {
+    "server": "progression.co.za",
+    "port": 993
+  },
+  "b.snapkitchen.org": {
+    "port": 993,
+    "server": "imap.hostinger.com"
+  },
+  "haking.online": {
+    "server": "mail.haking.online",
+    "port": 993
+  },
+  "cloutnews.com": {
+    "server": "imap.cloutnews.com",
+    "port": 993
+  },
+  "bkskiphire.co.uk": {
+    "server": "imap.bkskiphire.co.uk",
+    "port": 993
+  },
+  "contar.com.ar": {
+    "server": "mail.contar.com.ar",
+    "port": 993
+  },
+  "lumieredegaia.com": {
+    "server": "mail.lumieredegaia.com",
+    "port": 993
+  },
+  "css1.net": {
+    "server": "mail.css1.net",
+    "port": 143
+  },
+  "aristo.com.ar": {
+    "server": "aristo.com.ar",
+    "port": 993
+  },
+  "relishgarments.com": {
+    "server": "imap.relishgarments.com",
+    "port": 993
+  },
+  "wilberforcecommunitycollege.co.za": {
+    "server": "imap.wilberforcecommunitycollege.co.za",
+    "port": 993
+  },
+  "jaibharatengineer.com": {
+    "server": "imap.jaibharatengineer.com",
+    "port": 993
+  },
+  "cacgroup.net": {
+    "server": "imap.cacgroup.net",
+    "port": 993
+  },
+  "amsltdgroup.com": {
+    "server": "imap.amsltdgroup.com",
+    "port": 993
+  },
+  "mroffice.ae": {
+    "server": "imap.mroffice.ae",
+    "port": 993
+  },
+  "mirano.ro": {
+    "server": "mail.mirano.ro",
+    "port": 993
+  },
+  "sherrylitecompanylimited.com": {
+    "server": "imap.sherrylitecompanylimited.com",
+    "port": 993
+  },
+  "mistral.com.pk": {
+    "server": "imap.mistral.com.pk",
+    "port": 993
+  },
+  "familie.tele.dk": {
+    "port": 993,
+    "server": "imap.mail.dk"
+  },
+  "tikareview.com": {
+    "server": "mail.tikareview.com",
+    "port": 993
+  },
+  "oz24.eu": {
+    "server": "imap.oz24.eu",
+    "port": 993
+  },
+  "will-store.co.uk": {
+    "server": "imap.will-store.co.uk",
+    "port": 993
+  },
+  "gaia.id": {
+    "server": "mail.gaia.id",
+    "port": 993
+  },
+  "tafeel.com": {
+    "server": "imap.tafeel.com",
+    "port": 993
+  },
+  "injavcontadores.com": {
+    "server": "mail.injavcontadores.com",
+    "port": 993
+  },
+  "manpower.com.bo": {
+    "server": "imap.manpower.com.bo",
+    "port": 993
+  },
+  "rawabialmahfar.com": {
+    "server": "imap.rawabialmahfar.com",
+    "port": 993
+  },
+  "wslbd.com": {
+    "server": "mail.wslbd.com",
+    "port": 993
+  },
+  "agrowest.ro": {
+    "server": "mail.agrowest.ro",
+    "port": 993
+  },
+  "afaqalomran.com": {
+    "server": "imap.afaqalomran.com",
+    "port": 993
+  },
+  "tiki.id": {
+    "server": "imap.tiki.id",
+    "port": 993
+  },
+  "davidlucascommunication.com": {
+    "server": "imap.davidlucascommunication.com",
+    "port": 993
+  },
+  "in4works.com": {
+    "server": "mail.in4works.com",
+    "port": 993
+  },
+  "janbymarketing.com": {
+    "server": "imap.janbymarketing.com",
+    "port": 993
+  },
+  "student.utc.sk": {
+    "server": "mail.student.utc.sk",
+    "port": 993
+  },
+  "meharis.net": {
+    "server": "imap.meharis.net",
+    "port": 993
+  },
+  "viendongcid.com.vn": {
+    "server": "mail.viendongcid.com.vn",
+    "port": 993
+  },
+  "allianceaudit.com": {
+    "server": "imap.allianceaudit.com",
+    "port": 993
+  },
+  "betuliana.com": {
+    "server": "imap.betuliana.com",
+    "port": 993
+  },
+  "evendeo.net": {
+    "server": "mail.evendeo.net",
+    "port": 993
+  },
+  "megafumigaciones.com": {
+    "server": "imap.megafumigaciones.com",
+    "port": 993
+  },
+  "quraancollege.com": {
+    "server": "mail.quraancollege.com",
+    "port": 993
+  },
+  "sctv.coop": {
+    "server": "mail.sctv.coop",
+    "port": 993
+  },
+  "old.hamsatech-eg.com": {
+    "port": 993,
+    "server": "imap.hostinger.com"
+  },
+  "hmtshippingdubai.com": {
+    "server": "imap.hmtshippingdubai.com",
+    "port": 993
+  },
+  "albwan.com": {
+    "server": "imap.albwan.com",
+    "port": 993
+  },
+  "steadfastfacilitations.in": {
+    "server": "imap.steadfastfacilitations.in",
+    "port": 993
+  },
+  "grupovf.com.ar": {
+    "server": "mail.grupovf.com.ar",
+    "port": 993
+  },
+  "planlos.co.at": {
+    "server": "imap.planlos.co.at",
+    "port": 993
+  },
+  "nokia.vip-telco.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "3216.gotoc.cc": {
+    "server": "imap.3216.gotoc.cc",
+    "port": 993
+  },
+  "redblitz.com": {
+    "server": "mail.redblitz.com",
+    "port": 993
+  },
+  "ishack.net": {
+    "server": "mail.ishack.net",
+    "port": 993
+  },
+  "kejaksaan.go.id": {
+    "server": "mail.kejaksaan.go.id",
+    "port": 993
+  },
+  "tinko.pe": {
+    "server": "mail.tinko.pe",
+    "port": 993
+  },
+  "zinv.pl": {
+    "server": "mail.zinv.pl",
+    "port": 993
+  },
+  "techsoundbr.com.br": {
+    "server": "techsoundbr.com.br",
+    "port": 993
+  },
+  "veracityprime.com": {
+    "server": "mail.veracityprime.com",
+    "port": 993
+  },
+  "andresyasociados.com.mx": {
+    "server": "andresyasociados.com.mx",
+    "port": 993
+  },
+  "smartbeauty.com.sa": {
+    "server": "mail.smartbeauty.com.sa",
+    "port": 993
+  },
+  "goodwork-bh.com": {
+    "server": "mail.goodwork-bh.com",
+    "port": 993
+  },
+  "morgenstern-it.com": {
+    "server": "s13425.usc1.stableserver.net",
+    "port": 993
+  },
+  "emiratesmezna.com": {
+    "server": "mail.emiratesmezna.com",
+    "port": 993
+  },
+  "upadvisory.ma": {
+    "server": "upadvisory.ma",
+    "port": 993
+  },
+  "fundaciondocente.org.ar": {
+    "server": "fundaciondocente.org.ar",
+    "port": 993
+  },
+  "tfc-co.com": {
+    "server": "mail.tfc-co.com",
+    "port": 993
+  },
+  "innuvex.com": {
+    "server": "mail.innuvex.com",
+    "port": 993
+  },
+  "ymco.com.sa": {
+    "server": "mail.ymco.com.sa",
+    "port": 993
+  },
+  "quimiprova.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "bluehorizon.com.sa": {
+    "server": "mail.bluehorizon.com.sa",
+    "port": 993
+  },
+  "hibba-arabia.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "hondaguy.net": {
+    "server": "mx1.ninjaneering.net",
+    "port": 993
+  },
+  "broudvission.com": {
+    "server": "mail.broudvission.com",
+    "port": 993
+  },
+  "grantstevenslaw.com": {
+    "server": "mail.grantstevenslaw.com",
+    "port": 993
+  },
+  "lubosmasek.coach": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "myathenai.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "turbounlocks.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "kinesian.com": {
+    "server": "mail.kinesian.com",
+    "port": 993
+  },
+  "wildsorai.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "pcfix-informatica.com": {
+    "server": "pcfix-informatica.com",
+    "port": 993
+  },
+  "abstictecnologia.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "hdk-motorworks.be": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "munichlimoservice.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "basiana.ae": {
+    "server": "mail.basiana.ae",
+    "port": 993
+  },
+  "diabolo-web.com": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "studiociprianilaura.it": {
+    "server": "mail.register.it",
+    "port": 993
+  },
+  "telma.sa": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "compomail.online": {
+    "server": "_dc-mx.3746f3626ccc.compomail.online",
+    "port": 993
+  },
+  "delapt.com": {
+    "server": "mail.delapt.com",
+    "port": 993
+  },
+  "unitedtodaynews.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "conclusao.pt": {
+    "server": "conclusao.pt",
+    "port": 993
+  },
+  "zetaconstructionplc.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "targetcontabilidade.com": {
+    "server": "mx1.task.com.br",
+    "port": 993
+  },
+  "lr-czech.net": {
+    "server": "hosting.artgate.cz",
+    "port": 993
+  },
+  "magazzinidilainate.it": {
+    "server": "mail.register.it",
+    "port": 993
+  },
+  "ucr.ac.cr": {
+    "server": "imap.ucr.ac.cr",
+    "port": 993
+  },
+  "kirubamain.com": {
+    "server": "_dc-mx.f667cab27d85.kirubamain.com",
+    "port": 993
+  },
+  "shanahkross.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "srevent.co.uk": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "roseorwellpups.co.uk": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "fomsas.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "atmaeg.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "smslgroup.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "ideaksa.com": {
+    "server": "ideaksa.com",
+    "port": 993
+  },
+  "bluepacificengg.com": {
+    "server": "bluepacificengg.com",
+    "port": 993
+  },
+  "veltrixinboxpro.com": {
+    "server": "mail.veltrixinboxpro.com",
+    "port": 993
+  },
+  "balitreetop.com": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "sept-ci.com": {
+    "server": "sept-ci.com",
+    "port": 993
+  },
+  "artworks-net.com": {
+    "server": "mail7.heteml.jp",
+    "port": 993
+  },
+  "ariesbiruhotel.com": {
+    "server": "ariesbiruhotel.com",
+    "port": 993
+  },
+  "bambooprimeresidence.com": {
+    "server": "bambooprimeresidence.com",
+    "port": 993
+  },
+  "meilid.com.tw": {
+    "server": "mail.meilid.com.tw",
+    "port": 993
+  },
+  "anchassy.com": {
+    "server": "imap.anchassy.com",
+    "port": 993
+  },
+  "amtofsat.com": {
+    "server": "imap.amtofsat.com",
+    "port": 993
+  },
+  "mslc.com.sa": {
+    "server": "imap.mslc.com.sa",
+    "port": 993
+  },
+  "amayaconstrucciones.com": {
+    "server": "mail.amayaconstrucciones.com",
+    "port": 993
+  },
+  "drugsar.com": {
+    "server": "imap.drugsar.com",
+    "port": 993
+  },
+  "belizewebsitesolutions.com": {
+    "server": "mail.belizewebsitesolutions.com",
+    "port": 993
+  },
+  "bhttravel.com": {
+    "server": "mail.bhttravel.com",
+    "port": 993
+  },
+  "navitsa.com": {
+    "server": "navitsa.com",
+    "port": 993
+  },
+  "pnctrading.com": {
+    "server": "ms.mailcloud.com.tw",
+    "port": 993
+  },
+  "actp.ge": {
+    "server": "mail.actp.ge",
+    "port": 993
+  },
+  "airbrushtattsncaps.com.au": {
+    "server": "mail.airbrushtattsncaps.com.au",
+    "port": 993
+  },
+  "anshhr.com": {
+    "server": "anshhr.com",
+    "port": 993
+  },
+  "fjbrown.net": {
+    "server": "mail.fjbrown.net",
+    "port": 993
+  },
+  "power-veka.com.ar": {
+    "server": "power-veka.com.ar",
+    "port": 993
+  },
+  "standout.org.za": {
+    "server": "imap.standout.org.za",
+    "port": 993
+  },
+  "skullgames.eu": {
+    "server": "mail.skullgames.eu",
+    "port": 993
+  },
+  "avalon-tc.com": {
+    "server": "imap.avalon-tc.com",
+    "port": 993
+  },
+  "megapc.hu": {
+    "server": "mail.megapc.hu",
+    "port": 993
+  },
+  "postenor.ma": {
+    "server": "imap.postenor.ma",
+    "port": 993
+  },
+  "capyc.com.np": {
+    "server": "imap.capyc.com.np",
+    "port": 993
+  },
+  "serpinco.com": {
+    "server": "mail.serpinco.com",
+    "port": 993
+  },
+  "imsetech.com.ar": {
+    "server": "mail.imsetech.com.ar",
+    "port": 993
+  },
+  "grossiweb.it": {
+    "server": "mail.register.it",
+    "port": 993
+  },
+  "lahorenews.tv": {
+    "server": "mx1.lahorenews.tv",
+    "port": 993
+  },
+  "elm-edu.com.ar": {
+    "server": "mail.elm-edu.com.ar",
+    "port": 993
+  },
+  "coroemails.online": {
+    "server": "_dc-mx.40045fc80126.coroemails.online",
+    "port": 993
+  },
+  "jomaya.com": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "supportgulf.com": {
+    "server": "mail.supportgulf.com",
+    "port": 993
+  },
+  "freelancepaycalc.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "stamtooling.com": {
+    "server": "stamtooling.com",
+    "port": 993
+  },
+  "josse.pro": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "euslomails.com": {
+    "server": "_dc-mx.4b467abe457e.euslomails.com",
+    "port": 993
+  },
+  "famigliaderosa.eu": {
+    "server": "mail.register.it",
+    "port": 993
+  },
+  "tumejoroferta.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "etapanet.net": {
+    "server": "imap.etapanet.net",
+    "port": 993
+  },
+  "albasp.com": {
+    "server": "mail.albasp.com",
+    "port": 993
+  },
+  "artcopal.com": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "fps.sa": {
+    "server": "mail.fps.sa",
+    "port": 993
+  },
+  "mail.icss.sk": {
+    "server": "mail.boska.sk",
+    "port": 993
+  },
+  "histomail.store": {
+    "server": "_dc-mx.050b8339ceba.histomail.store",
+    "port": 993
+  },
+  "hexinonesolutions.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "emailstydie.online": {
+    "server": "_dc-mx.c0892dee37a5.emailstydie.online",
+    "port": 993
+  },
+  "soferemail.tech": {
+    "server": "_dc-mx.97b8c6138266.soferemail.tech",
+    "port": 993
+  },
+  "fastmeditalia.com": {
+    "server": "mail.fastmeditalia.com",
+    "port": 993
+  },
+  "cspavidos.net": {
+    "server": "mx.cspavidos.net",
+    "port": 993
+  },
+  "folofemail.tech": {
+    "server": "_dc-mx.19a6d1da6f33.folofemail.tech",
+    "port": 993
+  },
+  "rexpond.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "olwaysmails.com": {
+    "server": "_dc-mx.70a6aaceae49.olwaysmails.com",
+    "port": 993
+  },
+  "amuldairy.com": {
+    "server": "mail.amuldairy.com",
+    "port": 993
+  },
+  "jeeppb03.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "imssng.net": {
+    "server": "imap.imssng.net",
+    "port": 993
+  },
+  "pardesbr.org": {
+    "server": "pardesbr.org",
+    "port": 993
+  },
+  "rukaro.com": {
+    "server": "imap4.muumuu-mail.com",
+    "port": 993
+  },
+  "fashiol.in": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "bassface.co": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "lungcheong.com": {
+    "server": "imap.lungcheong.com",
+    "port": 993
+  },
+  "tu-sofia.bg": {
+    "server": "mail.tu-sofia.bg",
+    "port": 993
+  },
+  "tahamubeen.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "diplomator.se": {
+    "server": "mail.simply.com",
+    "port": 993
+  },
+  "elwaselsteel.com": {
+    "server": "mail.elwaselsteel.com",
+    "port": 993
+  },
+  "knocksa.com.ar": {
+    "server": "mail.knocksa.com.ar",
+    "port": 993
+  },
+  "tvakira.com": {
+    "server": "tvakira.com",
+    "port": 993
+  },
+  "stutech.hu": {
+    "server": "mail.stutech.hu",
+    "port": 993
+  },
+  "kat-b.com.pk": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "bluewatermep.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "webdinasty.ro": {
+    "server": "mail.webdinasty.ro",
+    "port": 993
+  },
+  "tirisulayoga.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "cruisesr2.space": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "totalimail.tech": {
+    "server": "_dc-mx.7d812a5c8497.totalimail.tech",
+    "port": 993
+  },
+  "pimmas.com.tr": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "cnyoungs.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "madrasahimambukhari.com": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "qdenim.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "bpartner.ro": {
+    "server": "mail.bpartner.ro",
+    "port": 993
+  },
+  "triodargent.com": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "monoliff.com": {
+    "server": "imap.monoliff.com",
+    "port": 993
+  },
+  "migenmici.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "kilamails.tech": {
+    "server": "_dc-mx.a6f216e6402e.kilamails.tech",
+    "port": 993
+  },
+  "abeduninstitute.org": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "awtad.net": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "aioustudies.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "jusuf.my.id": {
+    "server": "imap.jusuf.my.id",
+    "port": 993
+  },
+  "levyoutfitters.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "lojaelisvitreschool.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "jesperwallin.com": {
+    "server": "imap.one.com",
+    "port": 993
+  },
+  "mompo-sport.com": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "golmails.store": {
+    "server": "_dc-mx.b481c61e94b6.golmails.store",
+    "port": 993
+  },
+  "1sttrusthomecare.com": {
+    "server": "mail1.bravehost.com",
+    "port": 993
+  },
+  "kubanneftemash.ru": {
+    "server": "mail.kubanneftemash.ru",
+    "port": 993
+  },
+  "famsi.net": {
+    "server": "mail.famsi.net",
+    "port": 993
+  },
+  "jombar.es": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "calzadaevents.es": {
+    "server": "mail.calzadaevents.es",
+    "port": 993
+  },
+  "joseferrandez.es": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "alquimiarquitectura.es": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "bipiemails.com": {
+    "server": "_dc-mx.78c7e3cb392b.bipiemails.com",
+    "port": 993
+  },
+  "mundollaves.es": {
+    "server": "mail.mundollaves.es",
+    "port": 993
+  },
+  "gedemeble.pl": {
+    "server": "mail.gedemeble.pl",
+    "port": 993
+  },
+  "effecsemail.ru": {
+    "server": "mail.effecsemail.ru",
+    "port": 993
+  },
+  "enervationmail.ru": {
+    "server": "imap.enervationmail.ru",
+    "port": 993
+  },
+  "cartagena.es": {
+    "server": "ispconfig.ayto-cartagena.es",
+    "port": 993
+  },
+  "lutonprime.com": {
+    "server": "mail.lutonprime.com",
+    "port": 993
+  },
+  "delphinidaemail.ru": {
+    "server": "imap.delphinidaemail.ru",
+    "port": 993
+  },
+  "dancerprime.com": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "crookesmail.ru": {
+    "server": "imap.crookesmail.ru",
+    "port": 993
+  },
+  "mrttransportes.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "primptome.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "net11.com.br": {
+    "server": "mail.n11.net.br",
+    "port": 993
+  },
+  "meularesquadrias.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "globeoptimum.com": {
+    "server": "imap.globeoptimum.com",
+    "port": 993
+  },
+  "vallim.com.br": {
+    "server": "vallim.com.br",
+    "port": 993
+  },
+  "unicatreinamentos.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "enexsolar.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "relph.com.br": {
+    "server": "mail.relph.com.br",
+    "port": 993
+  },
+  "delatec.eco.br": {
+    "server": "mail.delatec.eco.br",
+    "port": 993
+  },
+  "srenergia.es": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "localservicos.com.br": {
+    "server": "mail.localservicos.com.br",
+    "port": 993
+  },
+  "bhonnie.com.br": {
+    "server": "mail.bhonnie.com.br",
+    "port": 993
+  },
+  "centralsoldas.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "iausdj.ac.ir": {
+    "server": "mail.iaubir.ir",
+    "port": 993
+  },
+  "exonix.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "acital.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "rnsol.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "qualimplan.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "telequipe.com.br": {
+    "server": "mail.telequipe.com.br",
+    "port": 993
+  },
+  "motorzaobr.com.br": {
+    "server": "mail.motorzaobr.com.br",
+    "port": 993
+  },
+  "aguiasdedeus.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "usinove.com.br": {
+    "server": "imap.stackmail.com",
+    "port": 993
+  },
+  "calixsolucoes.com.br": {
+    "server": "mail.calixsolucoes.com.br",
+    "port": 993
+  },
+  "julianiadvocacia.com.br": {
+    "server": "julianiadvocacia.com.br",
+    "port": 993
+  },
+  "plenitudeinformatica.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "gypsy.art.br": {
+    "server": "mail.gypsy.art.br",
+    "port": 993
+  },
+  "ecossistemacontabilbrasil.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "sfp.platecon.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "hotelnegreiros.com.br": {
+    "server": "kombi.sevenjidc.com.br",
+    "port": 993
+  },
+  "maranathacalcados.com.br": {
+    "server": "mail.maranathacalcados.com.br",
+    "port": 993
+  },
+  "betimtruck.com.br": {
+    "server": "mail.betimtruck.com.br",
+    "port": 993
+  },
+  "amdsaude.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "helptechmg.com.br": {
+    "server": "mail.helptechmg.com.br",
+    "port": 993
+  },
+  "editoraleao.com.br": {
+    "server": "imap.editoraleao.com.br",
+    "port": 993
+  },
+  "dlcengenharia.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "emailgupli.store": {
+    "server": "_dc-mx.20ef28f4a08d.emailgupli.store",
+    "port": 993
+  },
+  "phasedintelligence.za.net": {
+    "server": "mbox.freehostia.com",
+    "port": 993
+  },
+  "shoppingspt.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "simoncontabil.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "jbsmotors.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "cronnusconsultoria.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "energybrasilsolar.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "plamont.com.br": {
+    "server": "imap.plamont.com.br",
+    "port": 993
+  },
+  "unecont.com.br": {
+    "server": "mail.unecont.com.br",
+    "port": 993
+  },
+  "osparticipacoes.com.br": {
+    "server": "mail.osparticipacoes.com.br",
+    "port": 993
+  },
+  "immedsolution.com.br": {
+    "server": "mail.immedsolution.com.br",
+    "port": 993
+  },
+  "marketimperatives.com": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "vipfibertelecom.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "ramboefarias.com.br": {
+    "server": "mail.ramboefarias.com.br",
+    "port": 993
+  },
+  "gp4pay.com.br": {
+    "server": "mail.gp4pay.com.br",
+    "port": 993
+  },
+  "sonogolden.com.br": {
+    "server": "mail.sonogolden.com.br",
+    "port": 993
+  },
+  "ribermaq.com.br": {
+    "server": "ribermaq.com.br",
+    "port": 993
+  },
+  "nomerkado.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "alcsengenharia.com.br": {
+    "server": "mail.alcsengenharia.com.br",
+    "port": 993
+  },
+  "personalhealth2.com.br": {
+    "server": "mail.personalhealth2.com.br",
+    "port": 993
+  },
+  "besseconstrutora.com.br": {
+    "server": "mail.besseconstrutora.com.br",
+    "port": 993
+  },
+  "hmoro.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "coroaciimoveis.com.br": {
+    "server": "mail.coroaciimoveis.com.br",
+    "port": 993
+  },
+  "3n-rs.com.br": {
+    "server": "mail.3n-rs.com.br",
+    "port": 993
+  },
+  "mercadodoovo.com.br": {
+    "server": "mail.mercadodoovo.com.br",
+    "port": 993
+  },
+  "amodecants.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "vaaoteatromg.com.br": {
+    "server": "mx.dialhost.com.br",
+    "port": 993
+  },
+  "cinebistrot.com.br": {
+    "server": "imap.kinghost.net",
+    "port": 993
+  },
+  "eiprotecnologia.com.br": {
+    "server": "mail.eiprotecnologia.com.br",
+    "port": 993
+  },
+  "quiosquedolugui.com.br": {
+    "server": "mail.quiosquedolugui.com.br",
+    "port": 993
+  },
+  "farmaciasdescontofacil.com.br": {
+    "server": "mail.farmaciasdescontofacil.com.br",
+    "port": 993
+  },
+  "vettorsports.com.br": {
+    "server": "mail.vettorsports.com.br",
+    "port": 993
+  },
+  "grupomm9.com.br": {
+    "server": "mail.grupomm9.com.br",
+    "port": 993
+  },
+  "projecttaesquadrias.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "eliteconsultores.com.br": {
+    "server": "mail.eliteconsultores.com.br",
+    "port": 993
+  },
+  "vbrush.com.br": {
+    "server": "mail.vbrush.com.br",
+    "port": 993
+  },
+  "moveisce.com.br": {
+    "server": "mail.moveisce.com.br",
+    "port": 993
+  },
+  "peravia.pl": {
+    "server": "mail.peravia.pl",
+    "port": 993
+  },
+  "comdominium.com.br": {
+    "server": "imap.comdominium.com.br",
+    "port": 993
+  },
+  "fortyrepre.com.br": {
+    "server": "mail.fortyrepre.com.br",
+    "port": 993
+  },
+  "agenciatroiabrasil.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "flutuantesgirotti.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "energyfit.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "alfaconecta.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "demaparodel.com.br": {
+    "server": "mail.demaparodel.com.br",
+    "port": 993
+  },
+  "coelhociccone.com.br": {
+    "server": "mail.coelhociccone.com.br",
+    "port": 993
+  },
+  "qualify.pro.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "barracaoequipamentos.com.br": {
+    "server": "mail.barracaoequipamentos.com.br",
+    "port": 993
+  },
+  "cfbel01.com.br": {
+    "server": "cfbel01.com.br",
+    "port": 993
+  },
+  "rota77.app.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "sunprimeenergiasolar.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "exs.com.pt": {
+    "server": "mail.exs.com.pt",
+    "port": 993
+  },
+  "americaflextec.com.br": {
+    "server": "mail.americaflextec.com.br",
+    "port": 993
+  },
+  "iwegeral.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "carmonacabrera.com.br": {
+    "server": "mail.carmonacabrera.com.br",
+    "port": 993
+  },
+  "angel01.plus.com": {
+    "server": "mail.enmail.co",
+    "port": 993
+  },
+  "e3solucoesdigitais.com.br": {
+    "server": "mail.e3solucoesdigitais.com.br",
+    "port": 993
+  },
+  "8866xy66.cn": {
+    "server": "mail.8866jn8.cn",
+    "port": 993
+  },
+  "lilypadkids.cn": {
+    "server": "mx.ym.163.com",
+    "port": 993
+  },
+  "farmarsketrziste.cz": {
+    "server": "mx.rozhled.cz",
+    "port": 993
+  },
+  "dbox.cz": {
+    "server": "imap.dbox.cz",
+    "port": 993
+  },
+  "oneking.cn": {
+    "server": "mxw.263.net",
+    "port": 993
+  },
+  "mclmetz.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "lesagneauxdupre.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "ufolep-csrgymhdf.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "caparolbourg.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "jlchacha.cn": {
+    "server": "mail.jlchacha.cn",
+    "port": 993
+  },
+  "generation-zemmour.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "aide-au-choix-logiciels-rh.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "gentlemenaround.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "jlambert.fr": {
+    "server": "ssl0.ovh.net",
+    "port": 993
+  },
+  "tvsempre.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "ghmelo.com.br": {
+    "server": "imap.ghmelo.com.br",
+    "port": 993
+  },
+  "serracorp.com.br": {
+    "server": "imap.serracorp.com.br",
+    "port": 993
+  },
+  "ultramalhasloja.com.br": {
+    "server": "imap.hostinger.com",
+    "port": 993
+  },
+  "avs-info.fr": {
+    "server": "mail.avs-info.fr",
+    "port": 993
+  },
+  "fixreparos.com.br": {
+    "server": "mail.fixreparos.com.br",
+    "port": 993
+  },
+  "adbomrefugio.org.br": {
+    "server": "mail.adbomrefugio.org.br",
+    "port": 993
+  },
+  "univ-antilles.fr": {
+    "server": "imap.univ-antilles.fr",
+    "port": 993
+  },
+  "iqeq.cn": {
+    "server": "mail.iqeq.cn",
+    "port": 993
+  },
+  "nate.com": {
+    "server": "imap.nate.com",
+    "port": 993
+  },
+  "chaofan866.cn": {
+    "server": "imap.chaofan866.cn",
+    "port": 143
+  },
+  "stu.neu.edu.cn": {
+    "server": "imap.stu.neu.edu.cn",
+    "port": 993
+  },
+  "iyzhfd.ohls.com.cn": {
+    "server": "imap.iyzhfd.ohls.com.cn",
+    "port": 993
+  },
+  "8866xxyy.cn": {
+    "server": "mail.8866xxyy.cn",
+    "port": 143
+  },
+  "stu.sicau.edu.cn": {
+    "server": "mail.stu.sicau.edu.cn",
+    "port": 993
+  },
+  "jiouba.cn": {
+    "server": "imap.jiouba.cn",
+    "port": 143
+  },
+  "maruko.cz": {
+    "server": "imap.maruko.cz",
+    "port": 993
+  },
+  "ecoplanet.cz": {
+    "server": "mail.ecoplanet.cz",
+    "port": 143
+  },
+  "aoi.asso.fr": {
+    "port": 993,
+    "server": "ssl0.ovh.net"
+  },
+  "lumo.cz": {
+    "server": "mail.lumo.cz",
+    "port": 993
+  },
+  "sobek-tech.fr": {
+    "server": "imap.sobek-tech.fr",
+    "port": 993
+  },
+  "mycelium.fr": {
+    "server": "mail.mycelium.fr",
+    "port": 993
+  },
+  "ingebime.fr": {
+    "server": "imap.ingebime.fr",
+    "port": 993
+  },
+  "mailtrust.it": {
+    "server": "imap.mailtrust.it",
+    "port": 993
+  },
+  "ff.em-net.ne.jp": {
+    "port": 993,
+    "server": "imap.em-net.ne.jp"
+  },
+  "aa.em-net.ne.jp": {
+    "port": 993,
+    "server": "imap.em-net.ne.jp"
+  },
+  "mizushimacorp.co.jp": {
+    "server": "imap.mizushimacorp.co.jp",
+    "port": 993
+  },
+  "ii.em-net.ne.jp": {
+    "port": 993,
+    "server": "imap.em-net.ne.jp"
+  },
+  "wellbe.co.jp": {
+    "server": "imap.wellbe.co.jp",
+    "port": 993
+  },
+  "dd.em-net.ne.jp": {
+    "port": 993,
+    "server": "imap.em-net.ne.jp"
+  },
+  "tt.em-net.ne.jp": {
+    "port": 993,
+    "server": "imap.em-net.ne.jp"
+  },
+  "mxt.mesh.ne.jp": {
+    "server": "mail.biglobe.ne.jp",
+    "port": 993
+  },
+  "dgjp.co.jp": {
+    "server": "imap.dgjp.co.jp",
+    "port": 993
+  },
+  "kcf.biglobe.ne.jp": {
+    "port": 993,
+    "server": "mail.biglobe.ne.jp"
+  },
+  "muj.biglobe.ne.jp": {
+    "port": 993,
+    "server": "mail.biglobe.ne.jp"
+  },
+  "tokiwadengyo.co.jp": {
+    "server": "imap.tokiwadengyo.co.jp",
+    "port": 993
+  },
+  "syswall.jp": {
+    "server": "imap.syswall.jp",
+    "port": 993
+  },
+  "exweb.ne.jp": {
+    "server": "mail.exweb.ne.jp",
+    "port": 993
+  },
+  "beat-pop.jp": {
+    "server": "imap.beat-pop.jp",
+    "port": 993
+  },
+  "cr.em-net.ne.jp": {
+    "port": 993,
+    "server": "imap.em-net.ne.jp"
+  },
+  "firadis.onamaeweb.jp": {
+    "server": "mail.firadis.onamaeweb.jp",
+    "port": 993
+  },
+  "xqj.biglobe.ne.jp": {
+    "port": 993,
+    "server": "mail.biglobe.ne.jp"
+  },
+  "cc.em-net.ne.jp": {
+    "port": 993,
+    "server": "imap.em-net.ne.jp"
+  },
+  "xvb.biglobe.ne.jp": {
+    "port": 993,
+    "server": "mail.biglobe.ne.jp"
+  },
+  "a.biglobe.ne.jp": {
+    "port": 993,
+    "server": "mail.biglobe.ne.jp"
+  },
+  "xvf.biglobe.ne.jp": {
+    "port": 993,
+    "server": "mail.biglobe.ne.jp"
+  },
+  "coresense.jp": {
+    "server": "imap.coresense.jp",
+    "port": 993
+  },
+  "personalpromisebible.com": {
+    "server": "mail.personalpromisebible.com",
+    "port": 993
+  },
+  "auxigaweb.com": {
+    "server": "mail.auxigaweb.com",
+    "port": 993
+  },
+  "emeraude-emotions.com": {
+    "server": "mail.emeraude-emotions.com",
+    "port": 993
+  },
+  "77band.top": {
+    "server": "imap.77band.top",
+    "port": 993
+  },
+  "procasadexalapa.com.mx": {
+    "server": "mail.procasadexalapa.com.mx",
+    "port": 993
+  },
+  "378.gotoc.cc": {
+    "server": "imap.378.gotoc.cc",
+    "port": 993
+  },
+  "kap-sy.com": {
+    "server": "mail.kap-sy.com",
+    "port": 993
+  },
+  "post2.tele.dk": {
+    "port": 993,
+    "server": "imap.mail.dk"
+  },
+  "gumtree.me.uk": {
+    "server": "mail.gumtree.me.uk",
+    "port": 143
+  },
+  "77head.top": {
+    "server": "imap.77head.top",
+    "port": 993
+  },
+  "baiocco.org": {
+    "server": "imap.baiocco.org",
+    "port": 993
+  },
+  "leaptech.co.zw": {
+    "server": "imap.leaptech.co.zw",
+    "port": 993
+  },
+  "abpatrons.com": {
+    "server": "imap.abpatrons.com",
+    "port": 993
+  },
+  "grapestompers.org": {
+    "server": "mail.grapestompers.org",
+    "port": 993
+  },
+  "banakar.shop": {
+    "server": "mail.banakar.shop",
+    "port": 993
+  },
+  "238.gotoc.cc": {
+    "server": "imap.238.gotoc.cc",
+    "port": 993
+  },
+  "mindmaster.com.sg": {
+    "port": 993,
+    "server": "imap.hostinger.com"
+  },
+  "uangyih.com.tw": {
+    "server": "uangyih.com.tw",
+    "port": 143
+  },
+  "zahav.net.il": {
+    "server": "mail.zahav.net.il",
+    "port": 993
+  },
+  "grandacesventures.com": {
+    "server": "mail.grandacesventures.com",
+    "port": 993
+  },
+  "mail.edu.tw": {
+    "server": "mail.edu.tw",
+    "port": 993
+  },
+  "brainsoft-tech.com": {
+    "server": "mail.brainsoft-tech.com",
+    "port": 993
+  },
+  "showcasedisplays.net": {
+    "server": "mail.showcasedisplays.net",
+    "port": 993
+  },
+  "dsdane.com": {
+    "server": "imap.dsdane.com",
+    "port": 993
+  },
+  "anayase.com": {
+    "server": "mail.anayase.com",
+    "port": 993
+  },
+  "brosercat.com": {
+    "server": "imap.brosercat.com",
+    "port": 993
+  },
+  "vegaengenharia.com.br": {
+    "server": "imap.vegaengenharia.com.br",
+    "port": 993
+  },
+  "ete.tgstg.com": {
+    "server": "imap.ete.tgstg.com",
+    "port": 993
+  },
+  "thorcom.co.uk": {
+    "server": "imap.thorcom.co.uk",
+    "port": 993
+  },
+  "crozsell.com": {
+    "server": "imap.crozsell.com",
+    "port": 993
+  },
+  "weilerfamily.com": {
+    "server": "mail.weilerfamily.com",
+    "port": 993
+  },
+  "dutanet.net": {
+    "server": "mail.dutanet.net",
+    "port": 993
+  },
+  "jerry888.com": {
+    "server": "mail.jerry888.com",
+    "port": 993
+  },
+  "florian-blaettler.ch": {
+    "server": "mail.florian-blaettler.ch",
+    "port": 993
+  },
+  "africanwaves.com": {
+    "server": "mail.africanwaves.com",
+    "port": 993
+  },
+  "kaikou-law.com": {
+    "server": "imap.kaikou-law.com",
+    "port": 143
+  },
+  "sru.ac.ir": {
+    "server": "mail.sru.ac.ir",
+    "port": 993
+  },
+  "mailshopth.com": {
+    "server": "mail.mailshopth.com",
+    "port": 143
+  },
+  "famdalsgaard.dk": {
+    "server": "mail.famdalsgaard.dk",
+    "port": 993
+  },
+  "sipa-action.org": {
+    "server": "imap.sipa-action.org",
+    "port": 993
+  },
+  "36osdd.lernsax.de": {
+    "server": "imap.36osdd.lernsax.de",
+    "port": 993
+  },
+  "harpatecnologia.com.br": {
+    "server": "imap.harpatecnologia.com.br",
+    "port": 993
+  },
+  "devkysys.com": {
+    "server": "mail.devkysys.com",
+    "port": 993
+  },
+  "powertech.vn": {
+    "server": "mail.powertech.vn",
+    "port": 993
+  },
+  "stecowka.pl": {
+    "server": "mail.stecowka.pl",
+    "port": 993
+  },
+  "barrynovis.com": {
+    "server": "imap.barrynovis.com",
+    "port": 993
+  },
+  "raizon.com.br": {
+    "server": "imap.raizon.com.br",
+    "port": 993
+  },
+  "lazemni.com": {
+    "server": "imap.lazemni.com",
+    "port": 993
+  },
+  "hdcc-me.com": {
+    "server": "mail.hdcc-me.com",
+    "port": 993
+  },
+  "eisasi.com": {
+    "server": "mail.eisasi.com",
+    "port": 993
+  },
+  "arskonotomasyon.com": {
+    "server": "mail.arskonotomasyon.com",
+    "port": 993
+  },
+  "diocese-algarve.pt": {
+    "server": "mail.diocese-algarve.pt",
+    "port": 993
+  },
+  "hotkey.net.au": {
+    "server": "imap.hotkey.net.au",
+    "port": 993
+  },
+  "expresshonda.com": {
+    "server": "imap.expresshonda.com",
+    "port": 143
+  },
+  "t-c.gr": {
+    "server": "mail.t-c.gr",
+    "port": 993
+  },
+  "bobozuhao.com": {
+    "server": "imap.bobozuhao.com",
+    "port": 993
+  },
+  "ciel-telecom.com": {
+    "server": "mail.ciel-telecom.com",
+    "port": 993
+  },
+  "coaatg.org": {
+    "server": "imap.coaatg.org",
+    "port": 993
+  },
+  "csu.edu.cn": {
+    "server": "imap.csu.edu.cn",
+    "port": 993
+  },
+  "costabonita.com.mx": {
+    "server": "mail.costabonita.com.mx",
+    "port": 993
+  },
+  "htsegypt.net": {
+    "server": "mail.htsegypt.net",
+    "port": 993
+  },
+  "schofield.com": {
+    "server": "mail.schofield.com",
+    "port": 993
+  },
+  "graphipro.fr": {
+    "server": "mail.graphipro.fr",
+    "port": 993
+  },
+  "padariavitoriaregia.com.br": {
+    "server": "imap.padariavitoriaregia.com.br",
+    "port": 993
+  },
+  "tgsconsulting.it": {
+    "server": "imap.tgsconsulting.it",
+    "port": 993
+  },
+  "remuss.co.za": {
+    "server": "imap.remuss.co.za",
+    "port": 993
+  },
+  "amnet.net.au": {
+    "server": "mail.amnet.net.au",
+    "port": 993
+  },
+  "monts.fr": {
+    "server": "mail.monts.fr",
+    "port": 993
+  },
+  "rckart.com": {
+    "server": "mail.rckart.com",
+    "port": 993
+  },
+  "emcali.net.co": {
+    "server": "imap.emcali.net.co",
+    "port": 993
+  },
+  "hidup-baru.com": {
+    "server": "imap.hidup-baru.com",
+    "port": 993
+  },
+  "pixelinbox.com": {
+    "server": "mail.pixelinbox.com",
+    "port": 993
+  },
+  "officeinka.com": {
+    "server": "imap.officeinka.com",
+    "port": 993
+  },
+  "mobilprogramlar.com": {
+    "server": "mail.mobilprogramlar.com",
+    "port": 993
+  },
+  "maier-cnc-technik.de": {
+    "server": "imap.maier-cnc-technik.de",
+    "port": 993
+  },
+  "salgado.com": {
+    "server": "mail.salgado.com",
+    "port": 993
+  },
+  "spiritofsantafe.com": {
+    "server": "mail.spiritofsantafe.com",
+    "port": 993
+  },
+  "kazzz.com": {
+    "server": "imap.kazzz.com",
+    "port": 993
+  },
+  "kralupy.cz": {
+    "server": "mail.kralupy.cz",
+    "port": 993
+  },
+  "acet.pt": {
+    "server": "mail.acet.pt",
+    "port": 993
+  },
+  "staudinger.sk": {
+    "server": "mail.staudinger.sk",
+    "port": 993
+  },
+  "congotelecom.cg": {
+    "server": "imap.congotelecom.cg",
+    "port": 993
+  },
+  "hillsjewellery.de": {
+    "server": "mail.hillsjewellery.de",
+    "port": 993
   }
 }
