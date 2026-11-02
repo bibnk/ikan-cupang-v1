@@ -36,9 +36,23 @@ REMOTE_CONFIG_PATHS = [
     "/opt/pmj/imap/imap_config.json",
     "/opt/imap-checker/imap_config.json",
 ]
+REMOTE_SUCCESS_PATHS = [
+    "/opt/pmj/imap/imap_success.json",
+    "/opt/imap-checker/imap_success.json",
+]
 REMOTE_UNUSABLE_PATHS = [
     "/opt/pmj/imap/imap_unusable.json",
     "/opt/imap-checker/imap_unusable.json",
+]
+
+DISALLOWED_KEYWORDS = [
+    "google", "gmail", "googlemail", "aspmx",
+    "outlook", "office365", "microsoft", "hotmail", "live.com", "msn.com",
+    "zoho", "icloud", "apple", "yahoo", "ymail", "yahoodns",
+    "protonmail", "tutanota", "fastmail",
+    "cloudflare", "mimecast", "spamexperts", "barracuda", "proofpoint",
+    "trendmicro", "mailinblack", "hornetsecurity", "ironport",
+    "generic-isp", "breakthur", "b5z.net"
 ]
 
 DEFAULT_NODES = [
@@ -115,8 +129,21 @@ def fetch_node_data(node):
             try:
                 with sftp.open(rp, "r") as f:
                     data = json.load(f)
-                    if data:
-                        result["remote_configs"] = data
+                    if data and isinstance(data, dict):
+                        result["remote_configs"].update(data)
+                        break
+            except Exception:
+                continue
+
+        # 1b. Fetch imap_success.json (if present, merge verified domains)
+        for rp in REMOTE_SUCCESS_PATHS:
+            try:
+                with sftp.open(rp, "r") as f:
+                    data = json.load(f)
+                    if data and isinstance(data, dict):
+                        for dom, cfg in data.items():
+                            if dom not in result["remote_configs"] and isinstance(cfg, dict):
+                                result["remote_configs"][dom] = cfg
                         break
             except Exception:
                 continue
@@ -230,18 +257,30 @@ def main():
         r_cfg = res["remote_configs"]
         r_unusable = res["remote_unusable"]
 
-        new_cfg_keys = set(r_cfg.keys()) - set(local_configs.keys())
-        if new_cfg_keys:
-            for k in new_cfg_keys:
-                local_configs[k] = r_cfg[k]
-            pulled_configs += len(new_cfg_keys)
+        new_added = 0
+        for dom, cfg in r_cfg.items():
+            dom = dom.lower().strip()
+            if not isinstance(cfg, dict) or not cfg.get("server"):
+                continue
+            server = str(cfg.get("server", "")).lower()
+            if any(kw in server for kw in DISALLOWED_KEYWORDS):
+                if dom not in local_unusable:
+                    local_unusable.add(dom)
+                    pulled_unusable += 1
+                continue
+            if dom in local_unusable:
+                continue
+            if dom not in local_configs:
+                local_configs[dom] = cfg
+                new_added += 1
+                pulled_configs += 1
 
         new_unusable_keys = r_unusable - local_unusable
         if new_unusable_keys:
             local_unusable.update(new_unusable_keys)
             pulled_unusable += len(new_unusable_keys)
 
-        print(f"  📥 [{name}] ({host}): {len(r_cfg):,} valid (+{len(new_cfg_keys)}) | {len(r_unusable):,} unusable (+{len(new_unusable_keys)})")
+        print(f"  📥 [{name}] ({host}): {len(r_cfg):,} pulled (+{new_added} valid, +{len(new_unusable_keys)} unusable)")
 
     print(f"\n[*] Total new valid configs pulled: +{pulled_configs}")
     print(f"[*] Total new unusable domains pulled: +{pulled_unusable}")
