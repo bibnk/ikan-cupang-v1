@@ -25,10 +25,12 @@ except ImportError:
 LOCAL_MASTER_DIR = os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap")
 LOCAL_MASTER_CONFIG = os.path.join(LOCAL_MASTER_DIR, "imap_config.json")
 LOCAL_MASTER_UNUSABLE = os.path.join(LOCAL_MASTER_DIR, "imap_unusable.json")
+LOCAL_MASTER_EXCLUSION = os.path.join(LOCAL_MASTER_DIR, "subject_exclusion_list.json")
 
 REPO_DIR = os.path.join(os.path.expanduser("~"), "ikan cupang v1")
 REPO_CONFIG = os.path.join(REPO_DIR, "imap_config.json")
 REPO_UNUSABLE = os.path.join(REPO_DIR, "imap_unusable.json")
+REPO_EXCLUSION = os.path.join(REPO_DIR, "subject_exclusion_list.json")
 
 NODES_CONFIG_PATH = os.path.join(LOCAL_MASTER_DIR, "vps_nodes.json")
 
@@ -43,6 +45,10 @@ REMOTE_SUCCESS_PATHS = [
 REMOTE_UNUSABLE_PATHS = [
     "/opt/pmj/imap/imap_unusable.json",
     "/opt/imap-checker/imap_unusable.json",
+]
+REMOTE_EXCLUSION_PATHS = [
+    "/opt/pmj/imap/subject_exclusion_list.json",
+    "/opt/imap-checker/subject_exclusion_list.json",
 ]
 
 DISALLOWED_KEYWORDS = [
@@ -204,6 +210,22 @@ def push_node_data(node, master_configs, master_unusable):
                 ssh.exec_command(f"mv {rp}.tmp {rp}")
             except Exception:
                 continue
+
+        if os.path.exists(LOCAL_MASTER_EXCLUSION):
+            try:
+                with open(LOCAL_MASTER_EXCLUSION, "rb") as ef:
+                    excl_bytes = ef.read()
+                for rp in REMOTE_EXCLUSION_PATHS:
+                    try:
+                        pdir = os.path.dirname(rp)
+                        ssh.exec_command(f"mkdir -p {pdir}")
+                        with sftp.open(rp + ".tmp", "w") as f:
+                            f.write(excl_bytes)
+                        ssh.exec_command(f"mv {rp}.tmp {rp}")
+                    except Exception:
+                        continue
+            except Exception:
+                pass
 
         sftp.close()
 
