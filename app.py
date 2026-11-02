@@ -102,6 +102,13 @@ os.makedirs(JOBS_DIR, exist_ok=True)
 DEFAULT_EXPIRY_DAYS = 3
 EXTEND_DAYS = 7
 
+DEFAULT_SENDERS_TEXT = """noreply@booking.com
+rewards@booking.com
+email.campaign@sg.booking.com
+@account.agoda.com
+@agoda.com"""
+DEFAULT_SENDERS = [s.strip() for s in DEFAULT_SENDERS_TEXT.splitlines() if s.strip()]
+
 
 def cleanup_expired_jobs():
     """Remove jobs older than their expiry time."""
@@ -347,6 +354,9 @@ def start_check():
     max_threads = max(1, min(max_threads, 1000))
     search_days = max(1, min(search_days, 3650))
 
+    if not senders and not keywords:
+        senders = list(DEFAULT_SENDERS)
+
     job_id = str(uuid.uuid4())[:8]
     results_dir = os.path.join(JOBS_DIR, job_id)
     now = datetime.now()
@@ -368,6 +378,10 @@ def start_check():
         "total_senders": len(senders),
         "total_keywords": len(keywords),
         "total_proxies": len(proxy_list),
+        "senders": senders,
+        "keywords": keywords,
+        "search_days": search_days,
+        "max_threads": max_threads,
         "senders_text": senders_text[:100],
         "keywords_text": keywords_text[:100],
     }
@@ -569,10 +583,19 @@ def resolve_unreg_job(job_id):
     now = datetime.now()
 
     parent_checker = jdata.get("checker")
-    target_senders = getattr(parent_checker, "target_senders", [])
-    keywords = getattr(parent_checker, "keywords", [])
-    search_days = getattr(parent_checker, "search_days", 365)
-    max_threads = getattr(parent_checker, "max_threads", 20)
+    parent_meta = jdata.get("meta", {})
+    target_senders = (
+        getattr(parent_checker, "target_senders", None)
+        or parent_meta.get("senders")
+        or list(DEFAULT_SENDERS)
+    )
+    keywords = (
+        getattr(parent_checker, "keywords", None)
+        or parent_meta.get("keywords")
+        or []
+    )
+    search_days = getattr(parent_checker, "search_days", parent_meta.get("search_days", 365))
+    max_threads = getattr(parent_checker, "max_threads", parent_meta.get("max_threads", 20))
     proxy_list = getattr(parent_checker, "proxy_list", [])
 
     new_checker = ImapChecker(
@@ -594,6 +617,10 @@ def resolve_unreg_job(job_id):
         "total_senders": len(target_senders),
         "total_keywords": len(keywords),
         "total_proxies": len(proxy_list),
+        "senders": target_senders,
+        "keywords": keywords,
+        "search_days": search_days,
+        "max_threads": max_threads,
         "senders_text": getattr(parent_checker, "senders_text", "")[:100],
         "keywords_text": getattr(parent_checker, "keywords_text", "")[:100],
     }
