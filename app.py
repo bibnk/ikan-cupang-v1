@@ -899,12 +899,45 @@ def list_jobs():
 @login_required
 def extend_job(job_id):
     jdata = jobs.get(job_id)
+    job_dir = os.path.join(JOBS_DIR, job_id)
+    user_hash = session.get("code_hash", "")
+    is_admin = session.get("is_admin", False)
+
+    if not jdata and os.path.isdir(job_dir):
+        meta_file = os.path.join(job_dir, "meta.json")
+        mdata = {}
+        if os.path.exists(meta_file):
+            try:
+                mdata = json.load(open(meta_file, "r", encoding="utf-8"))
+            except Exception:
+                pass
+        if not is_admin and mdata.get("owner") and mdata.get("owner") != user_hash:
+            return jsonify({"error": "Unauthorized"}), 403
+
+        exp_str = str(mdata.get("expires_at") or "")
+        try:
+            curr_exp = datetime.strptime(exp_str, "%Y-%m-%d %H:%M:%S")
+        except Exception:
+            curr_exp = datetime.now() + timedelta(days=DEFAULT_EXPIRY_DAYS)
+        new_exp = curr_exp + timedelta(days=EXTEND_DAYS)
+        mdata["expires_at"] = new_exp.strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            with open(meta_file, "w", encoding="utf-8") as f:
+                json.dump(mdata, f, indent=2)
+        except Exception:
+            pass
+        return jsonify({
+            "success": True,
+            "message": f"Job diperpanjang {EXTEND_DAYS} hari",
+            "expires_at": mdata["expires_at"],
+        })
+
     if not jdata:
         return jsonify({"error": "Job not found"}), 404
-    user_hash = session.get("code_hash", "")
-    if not session.get("is_admin") and jdata.get("owner") != user_hash:
+    if not is_admin and jdata.get("owner") != user_hash:
         return jsonify({"error": "Unauthorized"}), 403
     jdata["expires_at"] = jdata["expires_at"] + timedelta(days=EXTEND_DAYS)
+    save_job_meta(job_id, jdata)
     return jsonify({
         "success": True,
         "message": f"Job diperpanjang {EXTEND_DAYS} hari",
@@ -916,19 +949,36 @@ def extend_job(job_id):
 @login_required
 def delete_job(job_id):
     jdata = jobs.get(job_id)
-    if not jdata:
-        return jsonify({"error": "Job not found"}), 404
-    user_hash = session.get("code_hash", "")
-    if not session.get("is_admin") and jdata.get("owner") != user_hash:
-        return jsonify({"error": "Unauthorized"}), 403
-    jobs.pop(job_id)
-    checker = jdata.get("checker")
-    if checker and hasattr(checker, 'stop'):
-        try:
-            checker.stop()
-        except Exception:
-            pass
     job_dir = os.path.join(JOBS_DIR, job_id)
+    user_hash = session.get("code_hash", "")
+    is_admin = session.get("is_admin", False)
+
+    if not jdata and not os.path.isdir(job_dir):
+        return jsonify({"error": "Job not found"}), 404
+
+    if not jdata and os.path.isdir(job_dir):
+        meta_file = os.path.join(job_dir, "meta.json")
+        if os.path.exists(meta_file):
+            try:
+                mdata = json.load(open(meta_file, "r", encoding="utf-8"))
+                if not is_admin and mdata.get("owner") and mdata.get("owner") != user_hash:
+                    return jsonify({"error": "Unauthorized"}), 403
+            except Exception:
+                pass
+        shutil.rmtree(job_dir, ignore_errors=True)
+        return jsonify({"success": True, "message": "Job dihapus"})
+
+    if jdata:
+        if not is_admin and jdata.get("owner") != user_hash:
+            return jsonify({"error": "Unauthorized"}), 403
+
+        jobs.pop(job_id, None)
+        checker = jdata.get("checker")
+        if checker and hasattr(checker, 'stop'):
+            try:
+                checker.stop()
+            except Exception:
+                pass
     if os.path.isdir(job_dir):
         shutil.rmtree(job_dir, ignore_errors=True)
     return jsonify({"success": True, "message": "Job dihapus"})
@@ -938,12 +988,27 @@ def delete_job(job_id):
 @login_required
 def job_live_list(job_id):
     jdata = jobs.get(job_id)
-    if not jdata:
-        return jsonify({"error": "Job not found"}), 404
+    job_dir = os.path.join(JOBS_DIR, job_id)
     user_hash = session.get("code_hash", "")
-    if not session.get("is_admin") and jdata.get("owner") != user_hash:
-        return jsonify({"error": "Unauthorized"}), 403
-    live_file = os.path.join(JOBS_DIR, job_id, "live.txt")
+    is_admin = session.get("is_admin", False)
+
+    if not jdata and not os.path.isdir(job_dir):
+        return jsonify({"error": "Job not found"}), 404
+
+    if not jdata and os.path.isdir(job_dir):
+        meta_file = os.path.join(job_dir, "meta.json")
+        if os.path.exists(meta_file):
+            try:
+                mdata = json.load(open(meta_file, "r", encoding="utf-8"))
+                if not is_admin and mdata.get("owner") and mdata.get("owner") != user_hash:
+                    return jsonify({"error": "Unauthorized"}), 403
+            except Exception:
+                pass
+    elif jdata:
+        if not is_admin and jdata.get("owner") != user_hash:
+            return jsonify({"error": "Unauthorized"}), 403
+
+    live_file = os.path.join(job_dir, "live.txt")
     accounts = []
     if os.path.exists(live_file):
         with open(live_file, 'r', encoding='utf-8', errors='ignore') as f:
