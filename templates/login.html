@@ -32,7 +32,8 @@
                 <div class="login-error">{{ error }}</div>
                 {% endif %}
 
-                <form method="POST" action="{{ url_for('login_page') }}" class="login-form">
+                <form method="POST" action="" class="login-form">
+                    <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
                     <div class="form-group">
                         <label for="code-input">
                             <span class="label-icon">🔑</span>

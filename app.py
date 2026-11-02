@@ -90,7 +90,8 @@ def login_required(f):
         if not session.get("authenticated"):
             if request.is_json or request.path.startswith("/api/"):
                 return jsonify({"error": "Unauthorized"}), 401
-            return redirect(url_for("login_page"))
+            target_url = request.full_path if request.query_string else request.path
+            return redirect(url_for("login_page", next=target_url))
         return f(*args, **kwargs)
     return decorated
 
@@ -160,6 +161,9 @@ def login_page():
             session["is_admin"] = (code == "sbb")
             session["code_hash"] = code_entry["code_hash"]
             session["user_label"] = code_entry.get("label", "unknown")
+            next_url = request.args.get("next") or request.form.get("next")
+            if next_url and next_url.startswith("/") and not next_url.startswith("//"):
+                return redirect(next_url)
             return redirect(url_for("index"))
         return render_template("login.html", error="Kode akses salah!")
     return render_template("login.html", error=None)
@@ -417,6 +421,42 @@ def stop_check(job_id):
     return jsonify({"message": "Stop signal sent", "job_id": job_id})
 
 
+def parse_live_report(content):
+    accounts = []
+    current_acc = None
+    for line in content.splitlines():
+        line_s = line.strip()
+        if line_s.startswith("[+] Account:"):
+            cred = line_s.split("[+] Account:", 1)[1].strip()
+            em, pw = cred.split(":", 1) if ":" in cred else (cred, "")
+            current_acc = {
+                "account": em,
+                "password": pw,
+                "email_count": 0,
+                "emails": []
+            }
+            accounts.append(current_acc)
+        elif current_acc and line_s.startswith("|") and not line_s.startswith("|--") and not line_s.startswith("| No."):
+            parts = [p.strip() for p in line_s.split("|")[1:-1]]
+            if len(parts) >= 4:
+                current_acc["emails"].append({
+                    "date": parts[1],
+                    "from": parts[2],
+                    "subject": parts[3]
+                })
+                current_acc["email_count"] = len(current_acc["emails"])
+        elif line_s and ":" in line_s and not line_s.startswith("="):
+            if not current_acc and "@" in line_s:
+                em, pw = line_s.split(":", 1)
+                accounts.append({
+                    "account": em,
+                    "password": pw,
+                    "email_count": 0,
+                    "emails": []
+                })
+    return accounts
+
+
 @app.route("/api/status/<job_id>")
 @login_required
 def job_status(job_id):
@@ -431,15 +471,50 @@ def job_status(job_id):
             except Exception:
                 pass
         meta = mdata.get("meta", {})
+
+        def _count_lines(fname):
+            p = os.path.join(results_dir, fname)
+            if os.path.exists(p):
+                try:
+                    with open(p, "rb") as f:
+                        return sum(1 for _ in f)
+                except Exception:
+                    return 0
+            return 0
+
+        live_path = os.path.join(results_dir, "live.txt")
+        live_accs = []
+        if os.path.exists(live_path):
+            try:
+                with open(live_path, "r", encoding="utf-8", errors="replace") as f:
+                    live_accs = parse_live_report(f.read())
+            except Exception:
+                pass
+
+        live_c = len(live_accs)
+        die_c = _count_lines("die.txt")
+        noemail_c = _count_lines("noemail.txt")
+        unreg_c = _count_lines("unreg_accounts.txt") or _count_lines("unreg.txt")
+        skipped_c = _count_lines("domain_skipped.txt")
+        total_acc = meta.get("total_accounts", live_c + die_c + noemail_c + unreg_c + skipped_c)
+        checked = live_c + die_c + noemail_c + unreg_c + skipped_c
+        pct = round((checked / total_acc * 100), 1) if total_acc > 0 else 100
+
         def generate_static():
             prog = {
                 "status": "done",
                 "job_id": job_id,
                 "job_type": meta.get("job_type", "check"),
                 "parent_job_id": meta.get("parent_job_id"),
-                "percentage": 100,
-                "checked": meta.get("total_accounts", 0),
-                "total": meta.get("total_accounts", 0),
+                "percentage": min(100, pct),
+                "checked": checked,
+                "total": total_acc,
+                "live": live_c,
+                "die": die_c,
+                "noemail": noemail_c,
+                "unreg": unreg_c,
+                "skipped": skipped_c,
+                "live_accounts": live_accs,
             }
             yield f"data: {json.dumps(prog)}\n\n"
         return Response(generate_static(), mimetype="text/event-stream")
