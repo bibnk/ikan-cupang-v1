@@ -457,6 +457,27 @@ def parse_live_report(content):
     return accounts
 
 
+def count_live_file(filepath):
+    if not os.path.exists(filepath):
+        return 0
+    try:
+        count_rep = 0
+        count_simple = 0
+        is_report = False
+        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+            for line in f:
+                line_s = line.strip()
+                if line_s.startswith("[+] Account:"):
+                    is_report = True
+                    count_rep += 1
+                elif not is_report and line_s and ":" in line_s and not line_s.startswith("=") and not line_s.startswith("|"):
+                    if "@" in line_s:
+                        count_simple += 1
+        return count_rep if is_report else count_simple
+    except Exception:
+        return 0
+
+
 @app.route("/api/status/<job_id>")
 @login_required
 def job_status(job_id):
@@ -957,7 +978,7 @@ def list_jobs():
                         return 0
                 return 0
 
-            live_c = _lines("live.txt")
+            live_c = count_live_file(os.path.join(jdir, "live.txt"))
             die_c = _lines("die.txt")
             noemail_c = _lines("noemail.txt")
             unreg_c = _lines("unreg_accounts.txt") or _lines("unreg.txt")
