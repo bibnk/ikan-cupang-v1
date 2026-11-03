@@ -68,15 +68,25 @@ DEFAULT_NODES = [
 
 
 def load_nodes():
-    if os.path.exists(NODES_CONFIG_PATH):
-        try:
-            with open(NODES_CONFIG_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            print(f"[!] Error reading {NODES_CONFIG_PATH}: {e}")
-    os.makedirs(os.path.dirname(NODES_CONFIG_PATH), exist_ok=True)
-    with open(NODES_CONFIG_PATH, "w", encoding="utf-8") as f:
-        json.dump(DEFAULT_NODES, f, indent=2)
+    candidates = [
+        "/opt/pmj/imap/vps_nodes.json",
+        "/opt/imap-checker/vps_nodes.json",
+        NODES_CONFIG_PATH,
+        os.path.join(REPO_DIR, "vps_nodes.json"),
+        os.path.join(os.path.dirname(__file__), "vps_nodes.json"),
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    if isinstance(data, list) and data:
+                        return data
+            except Exception as e:
+                print(f"[!] Error reading {p}: {e}")
+    if os.path.exists(os.path.dirname(NODES_CONFIG_PATH)):
+        with open(NODES_CONFIG_PATH, "w", encoding="utf-8") as f:
+            json.dump(DEFAULT_NODES, f, indent=2)
     return DEFAULT_NODES
 
 

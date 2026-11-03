@@ -1,0 +1,30 @@
+[
+  {
+    "name": "VPS-201 (Primary Checker)",
+    "host": "201.79.20.232",
+    "port": 22,
+    "user": "root",
+    "pass": "Jembut!23Je"
+  },
+  {
+    "name": "VPS-166 (Worker)",
+    "host": "166.88.227.2",
+    "port": 22,
+    "user": "root",
+    "pass": "Jembut!23"
+  },
+  {
+    "name": "VPS-165 (Worker)",
+    "host": "165.22.249.143",
+    "port": 22,
+    "user": "root",
+    "pass": "YzCreative1717Abc@"
+  },
+  {
+    "name": "VPS-74 (Worker)",
+    "host": "74.207.243.131",
+    "port": 22,
+    "user": "root",
+    "pass": "SRC*6ha&!$(KD!4+"
+  }
+]

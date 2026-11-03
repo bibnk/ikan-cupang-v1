@@ -37,7 +37,11 @@ def _inject_base():
     # request.script_root == that prefix ("" when run standalone), so all
     # front-end fetch() calls can be made prefix-aware via window.APP_BASE.
     from flask import request
-    return {"app_base": request.script_root or ""}
+    return {
+        "app_base": request.script_root or "",
+        "is_admin": session.get("is_admin", False),
+        "can_monitor": session.get("can_monitor", False),
+    }
 
 # Production: persist secret key so sessions survive restarts
 _key_file = os.path.join(os.path.dirname(__file__), '.secret_key')
@@ -64,8 +68,11 @@ def load_codes():
                 return json.load(f)
         except Exception:
             pass
-    # Default: "sbb"
-    default = [{"code_hash": hash_code("sbb"), "label": "default"}]
+    # Default: "sbb" (admin) & "monitor" (monitoring)
+    default = [
+        {"code_hash": hash_code("sbb"), "label": "admin"},
+        {"code_hash": hash_code("monitor"), "label": "monitor"}
+    ]
     save_codes(default)
     return default
 
@@ -81,6 +88,10 @@ def verify_code(code):
     for c in codes:
         if c["code_hash"] == h:
             return c  # Return the full code entry (hash + label)
+    if code == "sbb":
+        return {"code_hash": hash_code("sbb"), "label": "admin"}
+    if code == "monitor":
+        return {"code_hash": hash_code("monitor"), "label": "monitor"}
     return None
 
 
@@ -92,6 +103,22 @@ def login_required(f):
                 return jsonify({"error": "Unauthorized"}), 401
             target_url = request.full_path if request.query_string else request.path
             return redirect(url_for("login_page", next=target_url))
+        return f(*args, **kwargs)
+    return decorated
+
+
+def monitor_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("authenticated"):
+            if request.is_json or request.path.startswith("/api/"):
+                return jsonify({"error": "Unauthorized"}), 401
+            target_url = request.full_path if request.query_string else request.path
+            return redirect(url_for("login_page", next=target_url))
+        if not (session.get("can_monitor") or session.get("is_admin")):
+            if request.is_json or request.path.startswith("/api/"):
+                return jsonify({"error": "Forbidden"}), 403
+            return redirect(url_for("index"))
         return f(*args, **kwargs)
     return decorated
 
@@ -158,12 +185,17 @@ def login_page():
         code_entry = verify_code(code)
         if code_entry:
             session["authenticated"] = True
-            session["is_admin"] = (code == "sbb")
+            is_adm = (code == "sbb" or code_entry.get("label") == "admin")
+            is_mon = (code in ["sbb", "monitor"] or code_entry.get("label") in ["admin", "monitor"] or is_adm)
+            session["is_admin"] = is_adm
+            session["can_monitor"] = is_mon
             session["code_hash"] = code_entry["code_hash"]
             session["user_label"] = code_entry.get("label", "unknown")
             next_url = request.args.get("next") or request.form.get("next")
             if next_url and next_url.startswith("/") and not next_url.startswith("//"):
                 return redirect(next_url)
+            if code == "monitor":
+                return redirect(url_for("monitoring_page"))
             return redirect(url_for("index"))
         return render_template("login.html", error="Kode akses salah!")
     return render_template("login.html", error=None)
@@ -187,6 +219,177 @@ def index():
 @login_required
 def get_email_page():
     return render_template("get_email.html", is_admin=session.get("is_admin", False))
+
+
+@app.route("/monitoring")
+@monitor_required
+def monitoring_page():
+    return render_template("monitoring.html", is_admin=session.get("is_admin", False), can_monitor=session.get("can_monitor", False))
+
+
+@app.route("/api/monitoring/nodes", methods=["GET"])
+@monitor_required
+def api_monitoring_nodes():
+    import vps_monitoring
+    data = vps_monitoring.probe_all_nodes()
+    return jsonify(data)
+
+
+@app.route("/api/monitoring/test-node", methods=["POST"])
+@monitor_required
+def api_monitoring_test_node():
+    import vps_monitoring
+    data = request.get_json(silent=True) or {}
+    host = data.get("host", "").strip()
+    port = int(data.get("port", 22) or 22)
+    user = data.get("user", "root").strip() or "root"
+    pwd = data.get("pass", "")
+
+    if not pwd and host:
+        nodes = vps_monitoring.load_nodes()
+        for n in nodes:
+            if n.get("host") == host:
+                pwd = n.get("pass", "")
+                break
+
+    res = vps_monitoring.probe_single_node({
+        "host": host,
+        "port": port,
+        "user": user,
+        "pass": pwd,
+        "name": data.get("name", host)
+    })
+    return jsonify(res)
+
+
+@app.route("/api/monitoring/add-node", methods=["POST"])
+@monitor_required
+def api_monitoring_add_node():
+    import vps_monitoring
+    data = request.get_json(silent=True) or {}
+    host = data.get("host", "").strip()
+    name = data.get("name", "").strip() or host
+    port = int(data.get("port", 22) or 22)
+    user = data.get("user", "root").strip() or "root"
+    pwd = data.get("pass", "")
+    auto_sync = bool(data.get("auto_sync", False))
+
+    if not host:
+        return jsonify({"success": False, "error": "Host / IP tidak boleh kosong"}), 400
+
+    nodes = vps_monitoring.load_nodes()
+    for n in nodes:
+        if n.get("host") == host:
+            return jsonify({"success": False, "error": f"Node dengan IP {host} sudah terdaftar!"}), 400
+
+    new_node = {
+        "name": name,
+        "host": host,
+        "port": port,
+        "user": user,
+        "pass": pwd
+    }
+    nodes.append(new_node)
+    vps_monitoring.save_nodes(nodes)
+
+    sync_msg = ""
+    if auto_sync:
+        ok, msg = vps_monitoring.deploy_and_sync_node(new_node)
+        sync_msg = f" ({msg})"
+
+    return jsonify({"success": True, "message": f"Node '{name}' berhasil ditambahkan{sync_msg}"})
+
+
+@app.route("/api/monitoring/edit-node", methods=["POST"])
+@monitor_required
+def api_monitoring_edit_node():
+    import vps_monitoring
+    data = request.get_json(silent=True) or {}
+    idx = data.get("index", -1)
+    host = data.get("host", "").strip()
+    name = data.get("name", "").strip() or host
+    port = int(data.get("port", 22) or 22)
+    user = data.get("user", "root").strip() or "root"
+    pwd = data.get("pass", "")
+
+    nodes = vps_monitoring.load_nodes()
+    target_node = None
+    if 0 <= idx < len(nodes):
+        target_node = nodes[idx]
+    else:
+        for n in nodes:
+            if n.get("host") == host:
+                target_node = n
+                break
+
+    if not target_node:
+        return jsonify({"success": False, "error": "Node tidak ditemukan"}), 404
+
+    target_node["name"] = name
+    target_node["host"] = host
+    target_node["port"] = port
+    target_node["user"] = user
+    if pwd:
+        target_node["pass"] = pwd
+
+    vps_monitoring.save_nodes(nodes)
+    return jsonify({"success": True, "message": f"Node '{name}' berhasil diperbarui"})
+
+
+@app.route("/api/monitoring/delete-node", methods=["POST"])
+@monitor_required
+def api_monitoring_delete_node():
+    import vps_monitoring
+    data = request.get_json(silent=True) or {}
+    host = data.get("host", "").strip()
+    if not host:
+        return jsonify({"success": False, "error": "Host tidak boleh kosong"}), 400
+
+    nodes = vps_monitoring.load_nodes()
+    new_nodes = [n for n in nodes if n.get("host") != host]
+    if len(new_nodes) == len(nodes):
+        return jsonify({"success": False, "error": "Node tidak ditemukan"}), 404
+
+    vps_monitoring.save_nodes(new_nodes)
+    return jsonify({"success": True, "message": f"Node {host} berhasil dihapus"})
+
+
+@app.route("/api/monitoring/sync-all", methods=["POST"])
+@monitor_required
+def api_monitoring_sync_all():
+    import vps_monitoring
+    ok, output = vps_monitoring.run_sync_all()
+    return jsonify({"success": ok, "output": output})
+
+
+@app.route("/api/monitoring/sync-single", methods=["POST"])
+@monitor_required
+def api_monitoring_sync_single():
+    import vps_monitoring
+    data = request.get_json(silent=True) or {}
+    host = data.get("host", "").strip()
+    nodes = vps_monitoring.load_nodes()
+    node = next((n for n in nodes if n.get("host") == host), None)
+    if not node:
+        return jsonify({"success": False, "error": "Node tidak ditemukan"}), 404
+
+    ok, msg = vps_monitoring.deploy_and_sync_node(node)
+    return jsonify({"success": ok, "message": msg if ok else None, "error": msg if not ok else None})
+
+
+@app.route("/api/monitoring/restart-service", methods=["POST"])
+@monitor_required
+def api_monitoring_restart_service():
+    import vps_monitoring
+    data = request.get_json(silent=True) or {}
+    host = data.get("host", "").strip()
+    nodes = vps_monitoring.load_nodes()
+    node = next((n for n in nodes if n.get("host") == host), None)
+    if not node:
+        return jsonify({"success": False, "error": "Node tidak ditemukan"}), 404
+
+    ok, status = vps_monitoring.restart_node_service(node)
+    return jsonify({"success": ok, "status": status if ok else None, "error": status if not ok else None})
 
 
 @app.route("/admin")

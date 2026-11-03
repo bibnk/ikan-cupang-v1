@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPS Monitoring Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>window.APP_BASE = "{{ app_base }}";</script>
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --card-bg: rgba(15, 23, 42, 0.78);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-indigo: #6366f1;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #f1f5f9;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        .header-glow-custom {
+            position: absolute;
+            top: -120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 250px;
+            background: radial-gradient(ellipse, rgba(6, 182, 212, 0.25) 0%, rgba(99, 102, 241, 0.15) 50%, transparent 75%);
+            filter: blur(50px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .mon-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .mon-stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            backdrop-filter: blur(12px);
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mon-stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .mon-stat-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .mon-stat-icon-wrap svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .mon-stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mon-stat-num {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.1;
+            font-feature-settings: "tnum";
+        }
+
+        .mon-stat-label {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* Action Toolbar */
+        .mon-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+        }
+
+        .mon-search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 240px;
+            max-width: 400px;
+        }
+
+        .mon-search-wrap svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: #64748b;
+        }
+
+        .mon-search-input {
+            width: 100%;
+            padding: 10px 14px 10px 42px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .mon-search-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .mon-toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-mon {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-mon svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .btn-cyan {
+            background: linear-gradient(135deg, #06b6d4, #0284c7);
+            color: white;
+            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.25);
+        }
+
+        .btn-cyan:hover {
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-emerald {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-emerald:hover {
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        /* Node Cards Grid */
+        .mon-nodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
+        }
+
+        .node-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            backdrop-filter: blur(14px);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .node-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.4);
+        }
+
+        .node-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: opacity 0.3s;
+        }
+
+        .node-card.online::before {
+            background: linear-gradient(90deg, #10b981, #06b6d4);
+        }
+
+        .node-card.timeout::before {
+            background: linear-gradient(90deg, #f43f5e, #e11d48);
+        }
+
+        .node-card.auth_failed::before,
+        .node-card.error::before {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .node-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .node-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .node-endpoint {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #94a3b8;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            width: fit-content;
+            transition: background 0.15s ease;
+        }
+
+        .node-endpoint:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .node-endpoint svg {
+            width: 13px;
+            height: 13px;
+            opacity: 0.7;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-badge.online {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.online .pulse-dot {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-badge.timeout {
+            background: rgba(244, 63, 94, 0.15);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .status-badge.timeout .pulse-dot {
+            background: #f43f5e;
+            box-shadow: 0 0 10px #f43f5e;
+            animation: pulse-red 2s infinite;
+        }
+
+        .status-badge.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.warning .pulse-dot {
+            background: #f59e0b;
+            box-shadow: 0 0 10px #f59e0b;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Micro Metrics Grid */
+        .node-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .metric-box {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .metric-box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #94a3b8;
+            font-size: 11.5px;
+            font-weight: 500;
+        }
+
+        .metric-box-header svg {
+            width: 14px;
+            height: 14px;
+            opacity: 0.8;
+        }
+
+        .metric-box-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .latency-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .latency-fast { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .latency-medium { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .latency-slow { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+
+        .service-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .service-badge.active { color: #34d399; }
+        .service-badge.inactive { color: #f87171; }
+
+        .node-error-box {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #fca5a5;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .node-error-box svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .node-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-action-icon:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-action-icon.danger:hover {
+            background: rgba(244, 63, 94, 0.2);
+            border-color: rgba(244, 63, 94, 0.4);
+            color: #fb7185;
+        }
+
+        .btn-action-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 540px;
+            padding: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 19px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-title svg {
+            width: 22px;
+            height: 22px;
+            color: var(--accent-cyan);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.15s;
+        }
+
+        .modal-close:hover { color: #f1f5f9; }
+        .modal-close svg { width: 20px; height: 20px; }
+
+        .modal-form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-label svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .input-field-wrap {
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .log-box {
+            background: #020617;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            color: #94a3b8;
+            max-height: 380px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .spin-anim {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <button class="nav-toggle" id="nav-toggle" onclick="document.getElementById('floating-nav').classList.toggle('nav-open')">
+            <span class="hamburger-line"></span><span class="hamburger-line"></span><span class="hamburger-line"></span>
+        </button>
+        <nav class="floating-nav" id="floating-nav">
+            <a href="{{ url_for('index') }}" class="fnav-link"><span class="fnav-icon">📬</span><span class="fnav-label">Console</span></a>
+            <a href="{{ url_for('get_email_page') }}" class="fnav-link"><span class="fnav-icon">📨</span><span class="fnav-label">Get Email</span></a>
+            <a href="{{ url_for('loop_delete_page') }}" class="fnav-link"><span class="fnav-icon">🔄</span><span class="fnav-label">Loop Delete</span></a>
+            <a href="{{ url_for('history_page') }}" class="fnav-link"><span class="fnav-icon">📋</span><span class="fnav-label">History</span></a>
+            <a href="{{ url_for('monitoring_page') }}" class="fnav-link active"><span class="fnav-icon">🖥️</span><span class="fnav-label">Nodes</span></a>
+            {% if is_admin %}<a href="{{ url_for('admin_page') }}" class="fnav-link"><span class="fnav-icon">⚙️</span><span class="fnav-label">Admin</span></a>{% endif %}
+            <div class="fnav-divider"></div>
+            <a href="{{ url_for('logout') }}" class="fnav-link fnav-logout"><span class="fnav-icon">🚪</span><span class="fnav-label">Logout</span></a>
+        </nav>
+
+        <header class="header" style="margin-bottom: 24px; position:relative;">
+            <div class="header-glow-custom"></div>
+            <div class="header-content" style="position:relative; z-index:1;">
+                <div class="logo">
+                    <div class="logo-icon" style="background: linear-gradient(135deg, #06b6d4, #6366f1); box-shadow: 0 4px 20px rgba(6, 182, 212, 0.35);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                            <line x1="10" y1="6" x2="18" y2="6"></line>
+                            <line x1="10" y1="18" x2="18" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h1>VPS <span class="gradient-text" style="background: linear-gradient(135deg, #06b6d4, #818cf8); -webkit-background-clip:text; background-clip:text;">Monitoring Hub</span></h1>
+                </div>
+                <p class="subtitle">Pantau kesehatan runner VPS, status latensi, dan sinkronisasi database IMAP secara real-time</p>
+            </div>
+        </header>
+
+        <main class="main-content" style="max-width: 1240px; margin: 0 auto; width: 100%;">
+            <!-- Summary Stats -->
+            <div class="mon-stats-grid">
+                <div class="mon-stat-card">
+                    <div class="mon-stat-icon-wrap" style="background: rgba(6, 182, 212, 0.15); color: #22d3ee;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div class="mon-stat-info">
+                        <span class="mon-stat-num" id="stat-total-nodes">-</span>
+                        <span class="mon-stat-label">Total VPS Terdaftar</span>
+                    </div>
+                </div>
+
+                <div class="mon-stat-card">
+                    <div class="mon-stat-icon-wrap" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                    </div>
+                    <div class="mon-stat-info">
+                        <span class="mon-stat-num" id="stat-online-nodes" style="color:#34d399;">-</span>
+                        <span class="mon-stat-label">Node Online / Aktif</span>
+                    </div>
+                </div>
+
+                <div class="mon-stat-card">
+                    <div class="mon-stat-icon-wrap" style="background: rgba(244, 63, 94, 0.15); color: #fb7185;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="mon-stat-info">
+                        <span class="mon-stat-num" id="stat-timeout-nodes" style="color:#fb7185;">-</span>
+                        <span class="mon-stat-label">Node Timeout / Mati</span>
+                    </div>
+                </div>
+
+                <div class="mon-stat-card">
+                    <div class="mon-stat-icon-wrap" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                    </div>
+                    <div class="mon-stat-info">
+                        <span class="mon-stat-num" id="stat-master-db">-</span>
+                        <span class="mon-stat-label">Master IMAP Valid</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="mon-toolbar">
+                <div class="mon-search-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-nodes" class="mon-search-input" placeholder="Cari nama VPS atau IP Address...">
+                </div>
+
+                <div class="mon-toolbar-actions">
+                    <button id="btn-refresh" class="btn-mon btn-outline" onclick="loadNodesStatus(true)">
+                        <svg id="refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 4v6h-6"></path>
+                            <path d="M1 20v-6h6"></path>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        <span>Refresh Status</span>
+                    </button>
+
+                    <button id="btn-sync-all" class="btn-mon btn-cyan" onclick="triggerSyncAll()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        <span>Sinkronkan Semua VPS</span>
+                    </button>
+
+                    <button id="btn-add-node" class="btn-mon btn-emerald" onclick="openAddNodeModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        <span>Tambah VPS Baru</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nodes Grid -->
+            <div id="nodes-container" class="mon-nodes-grid">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94a3b8;">
+                    <div style="display:inline-block; margin-bottom:12px;">
+                        <svg class="spin-anim" style="width:32px; height:32px; color:var(--accent-cyan);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+                            <path d="M12 2a10 10 0 0 1 10 10"></path>
+                        </svg>
+                    </div>
+                    <p>Memeriksa kesehatan dan latensi seluruh VPS runner...</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer" style="margin-top: 40px;">
+            <p>VPS Monitoring Hub &bull; SBB Tools</p>
+        </footer>
+    </div>
+
+    <!-- Modal Tambah Node -->
+    <div id="modal-add-node" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    </svg>
+                    <span id="modal-form-title">Tambah Node VPS Baru</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('modal-add-node')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-form-grid">
+                <input type="hidden" id="edit-node-index" value="-1">
+
+                <div class="input-group">
+                    <label class="input-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        Nama Node / Label
+                    </label>
+                    <input type="text" id="node-name" class="input-field" placeholder="Contoh: VPS-99 (Runner)">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 12px;">
+                    <div class="input-group">
+                        <label class="input-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            Host / IP Address
+                        </label>
+                        <input type="text" id="node-host" class="input-field" placeholder="123.45.67.89">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Port SSH</label>
+                        <input type="number" id="node-port" class="input-field" value="22">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
+                    <div class="input-group">
+                        <label class="input-label">Username</label>
+                        <input type="text" id="node-user" class="input-field" value="root">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Password SSH
+                        </label>
+                        <input type="password" id="node-pass" class="input-field" placeholder="Password VPS">
+                    </div>
+                </div>
+
+                <div style="margin-top: 6px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:#cbd5e1; cursor:pointer;">
+                        <input type="checkbox" id="node-auto-sync" checked style="accent-color:var(--accent-cyan);">
+                        <span>Langsung deploy & sinkronkan database IMAP ke node ini</span>
+                    </label>
+                </div>
+
+                <!-- Test Connection Feedback Box -->
+                <div id="test-feedback" style="display:none; padding:12px; border-radius:10px; font-size:13px;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-mon btn-outline" id="btn-test-conn" onclick="testNodeConnection()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    <span>Tes Koneksi</span>
+                </button>
+                <button type="button" class="btn-mon btn-emerald" id="btn-save-node" onclick="saveNodeSubmit()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Simpan Node</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sync Log Output -->
+    <div id="modal-sync-log" class="modal-overlay">
+        <div class="modal-content" style="max-width: 680px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#06b6d4;">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>Output Sinkronisasi VPS</span>
+                </div>
+                <button class="modal-close" onclick="closeModal('modal-sync-log')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div id="sync-log-content" class="log-box">Memulai sinkronisasi dua arah...</div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-mon btn-outline" onclick="closeModal('modal-sync-log')">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const APP_BASE = (window.APP_BASE || "");
+        let currentNodes = [];
+
+        function openModal(id) {
+            document.getElementById(id).classList.add("open");
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove("open");
+        }
+
+        function copyToClipboard(text, el) {
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = el.innerHTML;
+                el.innerHTML = "<span>Copied!</span>";
+                setTimeout(() => { el.innerHTML = orig; }, 1200);
+            });
+        }
+
+        async function loadNodesStatus(animate = false) {
+            const refreshIcon = document.getElementById("refresh-icon");
+            if (animate && refreshIcon) refreshIcon.classList.add("spin-anim");
+
+            try {
+                const res = await fetch(APP_BASE + "/api/monitoring/nodes");
+                if (res.status === 401) {
+                    window.location.href = APP_BASE + "/login?next=" + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+                const data = await res.json();
+                if (data.success) {
+                    currentNodes = data.nodes || [];
+                    renderStats(data);
+                    renderNodes(currentNodes);
+                } else {
+                    document.getElementById("nodes-container").innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #fb7185;">
+                            <p>Gagal memuat status: ${data.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById("nodes-container").innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #fb7185;">
+                        <p>Koneksi terputus: ${err.message}</p>
+                    </div>
+                `;
+            } finally {
+                if (refreshIcon) refreshIcon.classList.remove("spin-anim");
+            }
+        }
+
+        function renderStats(data) {
+            document.getElementById("stat-total-nodes").textContent = data.total_nodes || 0;
+            document.getElementById("stat-online-nodes").textContent = data.online_count || 0;
+            document.getElementById("stat-timeout-nodes").textContent = (data.timeout_count || 0) + (data.error_count || 0);
+            
+            const masterCount = data.master ? data.master.configs_count : 0;
+            document.getElementById("stat-master-db").textContent = masterCount.toLocaleString('id-ID');
+        }
+
+        function renderNodes(nodes) {
+            const container = document.getElementById("nodes-container");
+            if (!nodes || nodes.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px; background:var(--card-bg); border-radius:18px; border:1px solid var(--card-border);">
+                        <svg style="width:48px; height:48px; color:#64748b; margin-bottom:12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        </svg>
+                        <h3 style="color:#f1f5f9; margin-bottom:6px;">Belum Ada Node VPS</h3>
+                        <p style="color:#94a3b8; font-size:14px; margin-bottom:16px;">Tambahkan node runner untuk mulai memantau dan sinkronisasi database IMAP.</p>
+                        <button class="btn-mon btn-emerald" onclick="openAddNodeModal()">+ Tambah VPS Pertama</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = nodes.map((n, idx) => {
+                const isOnline = (n.status === "online");
+                const isTimeout = (n.status === "timeout");
+                const isAuthFailed = (n.status === "auth_failed");
+                
+                let cardClass = isOnline ? "online" : (isTimeout ? "timeout" : "warning");
+                let badgeClass = isOnline ? "online" : (isTimeout ? "timeout" : "warning");
+                let statusLabel = isOnline ? "Online" : (isTimeout ? "Timeout" : (isAuthFailed ? "Auth Gagal" : "Error"));
+
+                let latencyBadge = "";
+                if (n.latency !== null && n.latency !== undefined) {
+                    const lClass = n.latency < 80 ? "latency-fast" : (n.latency < 400 ? "latency-medium" : "latency-slow");
+                    latencyBadge = `<span class="latency-pill ${lClass}">${n.latency} ms</span>`;
+                }
+
+                let syncBadge = "";
+                if (isOnline) {
+                    if (n.in_sync) {
+                        syncBadge = `<span style="color:#34d399; font-weight:600; font-size:11.5px;">✓ In Sync</span>`;
+                    } else if (n.diff_configs > 0) {
+                        syncBadge = `<span style="color:#38bdf8; font-weight:600; font-size:11.5px;">+${n.diff_configs} configs</span>`;
+                    } else if (n.diff_configs < 0) {
+                        syncBadge = `<span style="color:#fbbf24; font-weight:600; font-size:11.5px;">${n.diff_configs} behind</span>`;
+                    }
+                }
+
+                return `
+                    <div class="node-card ${cardClass}" data-host="${n.host}">
+                        <div class="node-header">
+                            <div class="node-title-group">
+                                <div class="node-name">
+                                    <span>${escapeHtml(n.name)}</span>
+                                </div>
+                                <div class="node-endpoint" onclick="copyToClipboard('${n.host}', this)" title="Klik untuk salin IP">
+                                    <span>${escapeHtml(n.host)}:${n.port}</span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+                                <div class="status-badge ${badgeClass}">
+                                    <span class="pulse-dot"></span>
+                                    <span>${statusLabel}</span>
+                                </div>
+                                ${latencyBadge}
+                            </div>
+                        </div>
+
+                        ${n.error ? `
+                            <div class="node-error-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                <span>${escapeHtml(n.error)}</span>
+                            </div>
+                        ` : `
+                            <div class="node-metrics-grid">
+                                <div class="metric-box">
+                                    <div class="metric-box-header">
+                                        <span>Service</span>
+                                        <button onclick="restartService('${n.host}', this)" title="Restart Service imap-checker" style="background:none; border:none; cursor:pointer; color:#94a3b8; padding:0;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                        </button>
+                                    </div>
+                                    <div class="metric-box-val">
+                                        <span class="service-badge ${n.service === 'active' ? 'active' : 'inactive'}">
+                                            ${n.service === 'active' ? '● active' : '○ ' + n.service}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="metric-box">
+                                    <div class="metric-box-header">
+                                        <span>IMAP Database</span>
+                                        ${syncBadge}
+                                    </div>
+                                    <div class="metric-box-val">
+                                        ${(n.configs_count || 0).toLocaleString('id-ID')}
+                                    </div>
+                                </div>
+
+                                <div class="metric-box">
+                                    <div class="metric-box-header">
+                                        <span>CPU Load</span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                    </div>
+                                    <div class="metric-box-val" style="font-size:12.5px;">
+                                        ${escapeHtml(n.loadavg)}
+                                    </div>
+                                </div>
+
+                                <div class="metric-box">
+                                    <div class="metric-box-header">
+                                        <span>RAM</span>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path></svg>
+                                    </div>
+                                    <div class="metric-box-val" style="font-size:13px;">
+                                        ${escapeHtml(n.mem)}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="font-size:12px; color:#64748b; font-family:'Fira Code',monospace; display:flex; justify-content:space-between;">
+                                <span>Uptime: ${escapeHtml(n.uptime)}</span>
+                                <span>Blacklist: ${n.unusable_count || 0}</span>
+                            </div>
+                        `}
+
+                        <div class="node-actions">
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-action-icon" onclick="testSingleNode('${n.host}', this)" title="Test Ping & SSH">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                                </button>
+                                <button class="btn-action-icon" onclick="syncSingleNode('${n.host}', this)" title="Deploy & Sinkronkan Node Ini">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                </button>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn-action-icon" onclick="openEditNodeModal(${idx})" title="Edit Konfigurasi Node">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </button>
+                                <button class="btn-action-icon danger" onclick="deleteNode('${n.host}', '${escapeHtml(n.name)}')" title="Hapus Node">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Search Filter
+        document.getElementById("search-nodes").addEventListener("input", function(e) {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                renderNodes(currentNodes);
+                return;
+            }
+            const filtered = currentNodes.filter(n => 
+                (n.name && n.name.toLowerCase().includes(query)) ||
+                (n.host && n.host.toLowerCase().includes(query))
+            );
+            renderNodes(filtered);
+        });
+
+        // Add / Edit Modal
+        function openAddNodeModal() {
+            document.getElementById("modal-form-title").textContent = "Tambah Node VPS Baru";
+            document.getElementById("edit-node-index").value = "-1";
+            document.getElementById("node-name").value = "";
+            document.getElementById("node-host").value = "";
+            document.getElementById("node-host").removeAttribute("readonly");
+            document.getElementById("node-port").value = "22";
+            document.getElementById("node-user").value = "root";
+            document.getElementById("node-pass").value = "";
+            document.getElementById("node-auto-sync").checked = true;
+            document.getElementById("test-feedback").style.display = "none";
+            openModal("modal-add-node");
+        }
+
+        function openEditNodeModal(idx) {
+            const node = currentNodes[idx];
+            if (!node) return;
+            document.getElementById("modal-form-title").textContent = "Edit Konfigurasi VPS";
+            document.getElementById("edit-node-index").value = idx;
+            document.getElementById("node-name").value = node.name || "";
+            document.getElementById("node-host").value = node.host || "";
+            document.getElementById("node-port").value = node.port || 22;
+            document.getElementById("node-user").value = node.user || "root";
+            document.getElementById("node-pass").value = ""; // User can type new password or leave blank
+            document.getElementById("node-pass").placeholder = "(Biarkan kosong jika tidak ingin diubah)";
+            document.getElementById("node-auto-sync").checked = false;
+            document.getElementById("test-feedback").style.display = "none";
+            openModal("modal-add-node");
+        }
+
+        async function testNodeConnection() {
+            const host = document.getElementById("node-host").value.trim();
+            const port = parseInt(document.getElementById("node-port").value.trim() || "22");
+            const user = document.getElementById("node-user").value.trim() || "root";
+            const pass = document.getElementById("node-pass").value;
+
+            const fb = document.getElementById("test-feedback");
+            const btn = document.getElementById("btn-test-conn");
+
+            if (!host) {
+                alert("Masukkan IP Address terlebih dahulu!");
+                return;
+            }
+
+            fb.style.display = "block";
+            fb.style.background = "rgba(6, 182, 212, 0.15)";
+            fb.style.border = "1px solid rgba(6, 182, 212, 0.3)";
+            fb.style.color = "#38bdf8";
+            fb.textContent = "Menguji koneksi socket & SSH ke " + host + ":" + port + "...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(APP_BASE + "/api/monitoring/test-node", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ host, port, user, pass })
+                });
+                const data = await res.json();
+                if (data.status === "online") {
+                    fb.style.background = "rgba(16, 185, 129, 0.15)";
+                    fb.style.border = "1px solid rgba(16, 185, 129, 0.3)";
+                    fb.style.color = "#34d399";
+                    fb.textContent = `✓ Sukses terhubung! Latensi: ${data.latency} ms | Service: ${data.service} | IMAP DB: ${data.configs_count} domain`;
+                } else {
+                    fb.style.background = "rgba(244, 63, 94, 0.15)";
+                    fb.style.border = "1px solid rgba(244, 63, 94, 0.3)";
+                    fb.style.color = "#fb7185";
+                    fb.textContent = `✗ Gagal terhubung (${data.status}): ${data.error || 'Timeout / port tertutup'}`;
+                }
+            } catch (err) {
+                fb.style.background = "rgba(244, 63, 94, 0.15)";
+                fb.style.border = "1px solid rgba(244, 63, 94, 0.3)";
+                fb.style.color = "#fb7185";
+                fb.textContent = "Error request: " + err.message;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function saveNodeSubmit() {
+            const idx = parseInt(document.getElementById("edit-node-index").value);
+            const name = document.getElementById("node-name").value.trim();
+            const host = document.getElementById("node-host").value.trim();
+            const port = parseInt(document.getElementById("node-port").value.trim() || "22");
+            const user = document.getElementById("node-user").value.trim() || "root";
+            const pass = document.getElementById("node-pass").value;
+            const auto_sync = document.getElementById("node-auto-sync").checked;
+
+            if (!host) {
+                alert("IP Address tidak boleh kosong!");
+                return;
+            }
+
+            const btn = document.getElementById("btn-save-node");
+            btn.disabled = true;
+            btn.textContent = "Menyimpan...";
+
+            const endpoint = (idx >= 0) ? "/api/monitoring/edit-node" : "/api/monitoring/add-node";
+            try {
+                const res = await fetch(APP_BASE + endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ index: idx, name, host, port, user, pass, auto_sync })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeModal("modal-add-node");
+                    loadNodesStatus(true);
+                } else {
+                    alert("Gagal: " + (data.error || 'Unknown error'));
+                }
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Simpan Node";
+            }
+        }
+
+        async function deleteNode(host, name) {
+            if (!confirm(`Hapus node "${name}" (${host}) dari daftar sinkronisasi?`)) return;
+            try {
+                const res = await fetch(APP_BASE + "/api/monitoring/delete-node", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ host })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadNodesStatus(true);
+                } else {
+                    alert("Gagal menghapus: " + data.error);
+                }
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        }
+
+        async function restartService(host, btn) {
+            if (!confirm(`Restart service imap-checker di ${host}?`)) return;
+            btn.classList.add("spin-anim");
+            try {
+                const res = await fetch(APP_BASE + "/api/monitoring/restart-service", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ host })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadNodesStatus(true);
+                } else {
+                    alert("Gagal restart: " + data.error);
+                }
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                btn.classList.remove("spin-anim");
+            }
+        }
+
+        async function testSingleNode(host, btn) {
+            btn.classList.add("spin-anim");
+            try {
+                const res = await fetch(APP_BASE + "/api/monitoring/test-node", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ host })
+                });
+                const data = await res.json();
+                if (data.status === "online") {
+                    alert(`✅ [${host}] Online!\nLatensi: ${data.latency} ms\nService: ${data.service}\nIMAP DB: ${data.configs_count} configs`);
+                } else {
+                    alert(`❌ [${host}] ${data.status.toUpperCase()}:\n${data.error}`);
+                }
+                loadNodesStatus(false);
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                btn.classList.remove("spin-anim");
+            }
+        }
+
+        async function syncSingleNode(host, btn) {
+            if (!confirm(`Sinkronkan master database ke ${host}?`)) return;
+            btn.classList.add("spin-anim");
+            try {
+                const res = await fetch(APP_BASE + "/api/monitoring/sync-single", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ host })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ Sukses!\n${data.message}`);
+                    loadNodesStatus(true);
+                } else {
+                    alert(`❌ Gagal:\n${data.error}`);
+                }
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                btn.classList.remove("spin-anim");
+            }
+        }
+
+        async function triggerSyncAll() {
+            const btn = document.getElementById("btn-sync-all");
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg class="spin-anim" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px; height:17px;">
+                    <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+                    <path d="M12 2a10 10 0 0 1 10 10"></path>
+                </svg>
+                <span>Sinkronisasi...</span>
+            `;
+
+            document.getElementById("sync-log-content").textContent = "Memulai sinkronisasi dua arah multi-VPS...\nMenarik data baru dari semua node, menggabungkan ke Master, dan menyebarkan ke seluruh runner...\n";
+            openModal("modal-sync-log");
+
+            try {
+                const res = await fetch(APP_BASE + "/api/monitoring/sync-all", { method: "POST" });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById("sync-log-content").textContent = data.output || "Sinkronisasi selesai tanpa log.";
+                    loadNodesStatus(true);
+                } else {
+                    document.getElementById("sync-log-content").textContent = "ERROR SINKRONISASI:\n" + (data.error || 'Unknown error');
+                }
+            } catch (e) {
+                document.getElementById("sync-log-content").textContent = "Koneksi terputus: " + e.message;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:17px; height:17px;">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>Sinkronkan Semua VPS</span>
+                `;
+            }
+        }
+
+        // Init load
+        loadNodesStatus(false);
+        // Auto refresh every 45s
+        setInterval(() => loadNodesStatus(false), 45000);
+    </script>
+</body>
+
+</html>
