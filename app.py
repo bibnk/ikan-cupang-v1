@@ -560,7 +560,7 @@ def start_check():
     if not accounts:
         return jsonify({"error": "Tidak ditemukan akun valid. Format: email:password"}), 400
 
-    max_threads = max(1, min(max_threads, 1000))
+    max_threads = max(1, min(max_threads, 2500))
     search_days = max(1, min(search_days, 3650))
 
     if not senders and not keywords:
