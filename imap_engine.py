@@ -663,7 +663,7 @@ def _escape_imap_string(s: str) -> str:
 
 
 class ImapChecker:
-    def __init__(self, job_id, results_dir, accounts, target_senders=None, keywords=None, search_days=365, max_threads=20, proxy_config=None, proxy_list=None, use_already=False):
+    def __init__(self, job_id, results_dir, accounts, target_senders=None, keywords=None, search_days=365, max_threads=20, proxy_config=None, proxy_list=None, use_already=False, record_already=True):
         self.job_id = job_id
         self.results_dir = results_dir
         self.accounts = accounts
@@ -672,6 +672,7 @@ class ImapChecker:
         self.search_days = search_days
         self.max_threads = max_threads
         self.use_already = use_already
+        self.record_already = record_already
 
         # Proxy: support both single proxy_config (backward compat) and proxy_list
         if proxy_list:
@@ -886,13 +887,14 @@ class ImapChecker:
                 "emails": email_summaries,
             })
 
-        # Record verified live combo to global already storage
-        try:
-            record_live_to_already(email_addr, password)
-            if self.use_already:
-                self.already_set.add(f"{email_addr.strip().lower()}:{password.strip()}")
-        except Exception:
-            pass
+        # Record verified live combo to global already storage (only for sbb / admin)
+        if self.record_already:
+            try:
+                record_live_to_already(email_addr, password)
+                if self.use_already:
+                    self.already_set.add(f"{email_addr.strip().lower()}:{password.strip()}")
+            except Exception:
+                pass
 
     def _write_already(self, email_addr, password):
         with self.already_lock:

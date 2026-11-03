@@ -570,6 +570,8 @@ def start_check():
     results_dir = os.path.join(JOBS_DIR, job_id)
     now = datetime.now()
 
+    is_sbb_admin = bool(session.get("is_admin") or session.get("code_hash") == hash_code("sbb"))
+
     checker = ImapChecker(
         job_id=job_id,
         results_dir=results_dir,
@@ -580,6 +582,7 @@ def start_check():
         max_threads=max_threads,
         proxy_list=proxy_list,
         use_already=use_already,
+        record_already=is_sbb_admin,
     )
 
     meta = {
