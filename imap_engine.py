@@ -31,6 +31,54 @@ MASTER_IMAP_SUCCESS_PATH = IMAP_SUCCESS_PATH
 MASTER_IMAP_SUCCESS_LOCK_PATH = MASTER_IMAP_SUCCESS_PATH + ".lock"
 MASTER_LOCK_TIMEOUT_SECONDS = 30
 
+# Already accounts storage — central database of verified live empass
+PMJ_DIR = os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap")
+ALREADY_FILE_CANDIDATES = [
+    os.path.join(PMJ_DIR, "already_accounts.txt"),
+    "/opt/pmj/imap/already_accounts.txt",
+    "/opt/imap-checker/already_accounts.txt",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "already_accounts.txt"),
+]
+
+def get_already_path():
+    for p in ALREADY_FILE_CANDIDATES:
+        pdir = os.path.dirname(p)
+        if os.path.exists(pdir):
+            return p
+    return ALREADY_FILE_CANDIDATES[-1]
+
+def load_already_accounts() -> set:
+    path = get_already_path()
+    res = set()
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        if ":" in line:
+                            em, pw = line.split(":", 1)
+                            res.add(f"{em.strip().lower()}:{pw.strip()}")
+                        else:
+                            res.add(line.lower())
+        except Exception:
+            pass
+    return res
+
+_ALREADY_GLOBAL_LOCK = threading.Lock()
+
+def record_live_to_already(email_addr: str, password: str):
+    """Save verified live combo to global already_accounts.txt."""
+    path = get_already_path()
+    line = f"{email_addr.strip().lower()}:{password.strip()}"
+    with _ALREADY_GLOBAL_LOCK:
+        try:
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except Exception:
+            pass
+
 # Skip-domains file (project root) — user-editable list of substrings
 # matched against email domain. Loaded per-job in ImapChecker.__init__.
 SKIP_DOMAINS_PATH = os.path.join(
@@ -615,7 +663,7 @@ def _escape_imap_string(s: str) -> str:
 
 
 class ImapChecker:
-    def __init__(self, job_id, results_dir, accounts, target_senders=None, keywords=None, search_days=365, max_threads=20, proxy_config=None, proxy_list=None):
+    def __init__(self, job_id, results_dir, accounts, target_senders=None, keywords=None, search_days=365, max_threads=20, proxy_config=None, proxy_list=None, use_already=False):
         self.job_id = job_id
         self.results_dir = results_dir
         self.accounts = accounts
@@ -623,6 +671,7 @@ class ImapChecker:
         self.keywords = keywords or []
         self.search_days = search_days
         self.max_threads = max_threads
+        self.use_already = use_already
 
         # Proxy: support both single proxy_config (backward compat) and proxy_list
         if proxy_list:
@@ -645,6 +694,7 @@ class ImapChecker:
         self.unreg_file = os.path.join(self.results_dir, "unreg.txt")
         self.unreg_accounts_file = os.path.join(self.results_dir, "unreg_accounts.txt")
         self.domain_skip_file = os.path.join(self.results_dir, "domain_skipped.txt")
+        self.already_file = os.path.join(self.results_dir, "already.txt")
 
         # Locks
         self.live_lock = threading.Lock()
@@ -654,6 +704,7 @@ class ImapChecker:
         self.unreg_accounts_lock = threading.Lock()
         self.domain_skip_lock = threading.Lock()
         self.imap_config_lock = threading.Lock()
+        self.already_lock = threading.Lock()
 
         # State
         self.unreg_domains = set()
@@ -663,6 +714,10 @@ class ImapChecker:
             self.unusable_domains = load_imap_unusable()
         except Exception:
             self.unusable_domains = set()
+
+        # Load Already database snapshot if enabled
+        self.already_count = 0
+        self.already_set = load_already_accounts() if use_already else set()
 
         # Skip-domains snapshot for this job (Requirement 5.1, 5.3).
         # Loaded BEFORE any worker thread is spawned in run() so the snapshot
@@ -831,6 +886,19 @@ class ImapChecker:
                 "emails": email_summaries,
             })
 
+        # Record verified live combo to global already storage
+        try:
+            record_live_to_already(email_addr, password)
+            if self.use_already:
+                self.already_set.add(f"{email_addr.strip().lower()}:{password.strip()}")
+        except Exception:
+            pass
+
+    def _write_already(self, email_addr, password):
+        with self.already_lock:
+            with open(self.already_file, 'a', encoding='utf-8') as f:
+                f.write(f"{email_addr}:{password}\n")
+
     def _write_noemail(self, email_addr, password):
         with self.noemail_lock:
             with open(self.noemail_file, 'a', encoding='utf-8') as f:
@@ -871,6 +939,8 @@ class ImapChecker:
                 self.unreg_count += 1
             elif category == "skipped":
                 self.skipped_count += 1
+            elif category == "already":
+                self.already_count += 1
 
     def get_progress(self):
         with self.progress_lock:
@@ -885,6 +955,7 @@ class ImapChecker:
                 "die": self.die_count,
                 "unreg": self.unreg_count,
                 "skipped": self.skipped_count,
+                "already": self.already_count,
             }
 
         # Include live accounts for UI display
@@ -1070,6 +1141,15 @@ class ImapChecker:
             if self.is_stopped:
                 queue.task_done()
                 break
+
+            # Filter Already: skip account if already verified live previously
+            if self.use_already:
+                combo_key = f"{email_addr.strip().lower()}:{password.strip()}"
+                if combo_key in self.already_set:
+                    self._write_already(email_addr, password)
+                    self._update_progress("already")
+                    queue.task_done()
+                    continue
 
             # Get proxy for this account (round-robin rotation)
             proxy = self._get_proxy()

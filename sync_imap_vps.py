@@ -50,6 +50,11 @@ REMOTE_EXCLUSION_PATHS = [
     "/opt/pmj/imap/subject_exclusion_list.json",
     "/opt/imap-checker/subject_exclusion_list.json",
 ]
+LOCAL_MASTER_ALREADY = os.path.join(LOCAL_MASTER_DIR, "already_accounts.txt")
+REMOTE_ALREADY_PATHS = [
+    "/opt/pmj/imap/already_accounts.txt",
+    "/opt/imap-checker/already_accounts.txt",
+]
 
 DISALLOWED_KEYWORDS = [
     "google", "gmail", "googlemail", "aspmx",
@@ -231,6 +236,22 @@ def push_node_data(node, master_configs, master_unusable):
                         ssh.exec_command(f"mkdir -p {pdir}")
                         with sftp.open(rp + ".tmp", "w") as f:
                             f.write(excl_bytes)
+                        ssh.exec_command(f"mv {rp}.tmp {rp}")
+                    except Exception:
+                        continue
+            except Exception:
+                pass
+
+        if os.path.exists(LOCAL_MASTER_ALREADY):
+            try:
+                with open(LOCAL_MASTER_ALREADY, "rb") as af:
+                    already_bytes = af.read()
+                for rp in REMOTE_ALREADY_PATHS:
+                    try:
+                        pdir = os.path.dirname(rp)
+                        ssh.exec_command(f"mkdir -p {pdir}")
+                        with sftp.open(rp + ".tmp", "w") as f:
+                            f.write(already_bytes)
                         ssh.exec_command(f"mv {rp}.tmp {rp}")
                     except Exception:
                         continue

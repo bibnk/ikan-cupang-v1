@@ -56,6 +56,7 @@
             var statsHtml =
                 '<div class="hist-stats">' +
                 '<span class="hist-stat live">✅ ' + j.live + '</span>' +
+                (j.already ? '<span class="hist-stat already">🔄 ' + j.already + '</span>' : '') +
                 '<span class="hist-stat noemail">📭 ' + j.noemail + '</span>' +
                 '<span class="hist-stat die">💀 ' + j.die + '</span>' +
                 '<span class="hist-stat unreg">❓ ' + j.unreg + '</span>' +
@@ -79,6 +80,7 @@
 
             var buttonsHtml = '<div class="hist-actions">';
             if (j.live > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/live" class="hist-dl-btn live" download>✅ Live.txt</a>';
+            if (j.already > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/already" class="hist-dl-btn already" download>🔄 Already.txt</a>';
             if (j.noemail > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/noemail" class="hist-dl-btn noemail" download>📭 NoEmail.txt</a>';
             if (j.die > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/die" class="hist-dl-btn die" download>💀 Die.txt</a>';
             if (j.unreg > 0) buttonsHtml += '<a href="' + APP_BASE + '/api/download/' + j.job_id + '/unreg" class="hist-dl-btn unreg" download>❓ Unreg.txt</a>';

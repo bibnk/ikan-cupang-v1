@@ -32,6 +32,7 @@
     var statDie = document.getElementById("stat-die");
     var statUnreg = document.getElementById("stat-unreg");
     var statSkipped = document.getElementById("stat-skipped");
+    var statAlready = document.getElementById("stat-already");
 
     var liveSection = document.getElementById("live-section");
     var liveList = document.getElementById("live-list");
@@ -248,6 +249,9 @@
         stopBtn.disabled = false;
 
         try {
+            var useAlreadyToggle = document.getElementById("already-filter-toggle");
+            var useAlreadyVal = useAlreadyToggle ? useAlreadyToggle.checked : true;
+
             var res = await fetch(APP_BASE+"/api/check", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -258,6 +262,7 @@
                     proxies: proxies,
                     search_days: days,
                     max_threads: threads,
+                    use_already: useAlreadyVal,
                 }),
             });
 
@@ -349,6 +354,7 @@
         statDie.textContent = d.die;
         statUnreg.textContent = d.unreg;
         statSkipped.textContent = d.skipped;
+        if (statAlready) statAlready.textContent = d.already || 0;
 
         var jid = d.job_id || currentJobId;
         var badge = document.getElementById("job-title-badge");
@@ -368,6 +374,7 @@
         }
 
         enableDownloadLink("live", d.live > 0);
+        enableDownloadLink("already", (d.already || 0) > 0);
         enableDownloadLink("noemail", d.noemail > 0);
         enableDownloadLink("die", d.die > 0);
         enableDownloadLink("unreg", d.unreg > 0);

@@ -16,6 +16,8 @@ jobs/
 # Customizable runtime lists (instance-specific)
 skip_domains.json
 subject_exclusion_list.json
+already_accounts.txt
+already*.txt
 
 # =====================================================
 # Python

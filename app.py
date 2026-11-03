@@ -65,13 +65,14 @@ def load_codes():
     if os.path.exists(CODES_FILE):
         try:
             with open(CODES_FILE, 'r') as f:
-                return json.load(f)
+                codes = json.load(f)
+                if isinstance(codes, list):
+                    return codes
         except Exception:
             pass
-    # Default: "sbb" (admin) & "monitor" (monitoring)
+    # Default: "sbb" (admin) only
     default = [
-        {"code_hash": hash_code("sbb"), "label": "admin"},
-        {"code_hash": hash_code("monitor"), "label": "monitor"}
+        {"code_hash": hash_code("sbb"), "label": "admin"}
     ]
     save_codes(default)
     return default
@@ -83,15 +84,18 @@ def save_codes(codes):
 
 
 def verify_code(code):
+    code = code.strip()
+    if not code:
+        return None
+    # Master admin code
+    if code == "sbb":
+        return {"code_hash": hash_code("sbb"), "label": "admin"}
+    # Authorized user codes (managed by sbb in /admin)
     codes = load_codes()
     h = hash_code(code)
     for c in codes:
-        if c["code_hash"] == h:
-            return c  # Return the full code entry (hash + label)
-    if code == "sbb":
-        return {"code_hash": hash_code("sbb"), "label": "admin"}
-    if code == "monitor":
-        return {"code_hash": hash_code("monitor"), "label": "monitor"}
+        if c.get("code_hash") == h:
+            return c
     return None
 
 
@@ -186,16 +190,13 @@ def login_page():
         if code_entry:
             session["authenticated"] = True
             is_adm = (code == "sbb" or code_entry.get("label") == "admin")
-            is_mon = (code in ["sbb", "monitor"] or code_entry.get("label") in ["admin", "monitor"] or is_adm)
             session["is_admin"] = is_adm
-            session["can_monitor"] = is_mon
+            session["can_monitor"] = is_adm
             session["code_hash"] = code_entry["code_hash"]
-            session["user_label"] = code_entry.get("label", "unknown")
+            session["user_label"] = code_entry.get("label", "user")
             next_url = request.args.get("next") or request.form.get("next")
             if next_url and next_url.startswith("/") and not next_url.startswith("//"):
                 return redirect(next_url)
-            if code == "monitor":
-                return redirect(url_for("monitoring_page"))
             return redirect(url_for("index"))
         return render_template("login.html", error="Kode akses salah!")
     return render_template("login.html", error=None)
@@ -537,6 +538,7 @@ def start_check():
     proxies_text = data.get("proxies", "").strip()
     search_days = int(data.get("search_days", 365))
     max_threads = int(data.get("max_threads", 20))
+    use_already = bool(data.get("use_already", False))
 
     if not accounts_text:
         return jsonify({"error": "Accounts tidak boleh kosong"}), 400
@@ -577,6 +579,7 @@ def start_check():
         search_days=search_days,
         max_threads=max_threads,
         proxy_list=proxy_list,
+        use_already=use_already,
     )
 
     meta = {
@@ -585,6 +588,7 @@ def start_check():
         "total_senders": len(senders),
         "total_keywords": len(keywords),
         "total_proxies": len(proxy_list),
+        "use_already": use_already,
         "senders": senders,
         "keywords": keywords,
         "search_days": search_days,
@@ -720,8 +724,9 @@ def job_status(job_id):
         noemail_c = _count_lines("noemail.txt")
         unreg_c = _count_lines("unreg_accounts.txt") or _count_lines("unreg.txt")
         skipped_c = _count_lines("domain_skipped.txt")
-        total_acc = meta.get("total_accounts", live_c + die_c + noemail_c + unreg_c + skipped_c)
-        checked = live_c + die_c + noemail_c + unreg_c + skipped_c
+        already_c = _count_lines("already.txt")
+        total_acc = meta.get("total_accounts", live_c + die_c + noemail_c + unreg_c + skipped_c + already_c)
+        checked = live_c + die_c + noemail_c + unreg_c + skipped_c + already_c
         pct = round((checked / total_acc * 100), 1) if total_acc > 0 else 100
 
         def generate_static():
@@ -738,6 +743,7 @@ def job_status(job_id):
                 "noemail": noemail_c,
                 "unreg": unreg_c,
                 "skipped": skipped_c,
+                "already": already_c,
                 "live_accounts": live_accs,
             }
             yield f"data: {json.dumps(prog)}\n\n"
@@ -771,6 +777,7 @@ def download_file(job_id, file_type):
         "unreg": "unreg.txt",
         "unreg_accounts": "unreg_accounts.txt",
         "domain_skipped": "domain_skipped.txt",
+        "already": "already.txt",
     }
     if file_type not in allowed:
         return jsonify({"error": "Invalid file type"}), 400
@@ -1144,6 +1151,7 @@ def list_jobs():
             "noemail": progress.get("noemail", 0),
             "unreg": progress.get("unreg", 0),
             "skipped": progress.get("skipped", 0),
+            "already": progress.get("already", 0),
             "created_at": c_str,
             "expires_at": e_str,
             "meta": meta,
@@ -1186,9 +1194,10 @@ def list_jobs():
             noemail_c = _lines("noemail.txt")
             unreg_c = _lines("unreg_accounts.txt") or _lines("unreg.txt")
             skipped_c = _lines("domain_skipped.txt")
+            already_c = _lines("already.txt")
             meta = mdata.get("meta", {})
-            total_acc = meta.get("total_accounts", live_c + die_c + noemail_c + unreg_c + skipped_c)
-            checked = live_c + die_c + noemail_c + unreg_c + skipped_c
+            total_acc = meta.get("total_accounts", live_c + die_c + noemail_c + unreg_c + skipped_c + already_c)
+            checked = live_c + die_c + noemail_c + unreg_c + skipped_c + already_c
             pct = round((checked / total_acc * 100), 1) if total_acc > 0 else 100
 
             try:
@@ -1209,6 +1218,7 @@ def list_jobs():
                 "noemail": noemail_c,
                 "unreg": unreg_c,
                 "skipped": skipped_c,
+                "already": already_c,
                 "created_at": mdata.get("created_at", c_time),
                 "expires_at": mdata.get("expires_at", c_time),
                 "meta": meta,

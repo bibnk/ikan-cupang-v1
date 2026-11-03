@@ -722,6 +722,11 @@ input[type="number"] {
     border-color: rgba(139, 92, 246, 0.2);
 }
 
+.stat-card.already {
+    background: rgba(6, 182, 212, 0.1);
+    border-color: rgba(6, 182, 212, 0.25);
+}
+
 .stat-card.skipped {
     background: var(--color-skipped-bg);
     border-color: rgba(100, 116, 139, 0.2);
@@ -758,6 +763,10 @@ input[type="number"] {
 
 .stat-card.unreg .stat-value {
     color: var(--color-unreg);
+}
+
+.stat-card.already .stat-value {
+    color: #06b6d4;
 }
 
 .stat-card.skipped .stat-value {
@@ -1061,6 +1070,11 @@ input[type="number"] {
 .download-btn.unreg:hover:not(.disabled) {
     border-color: var(--color-unreg);
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
+}
+
+.download-btn.already:hover:not(.disabled) {
+    border-color: #06b6d4;
+    box-shadow: 0 4px 16px rgba(6, 182, 212, 0.2);
 }
 
 .download-btn.domain_skipped:hover:not(.disabled) {
@@ -1791,6 +1805,12 @@ input[type="number"] {
     color: var(--color-live);
 }
 
+.hist-stat.already {
+    color: #22d3ee;
+    background: rgba(6, 182, 212, 0.15);
+    border-color: rgba(6, 182, 212, 0.3);
+}
+
 .hist-stat.die {
     color: var(--color-die);
 }
@@ -1831,6 +1851,17 @@ input[type="number"] {
     background: rgba(99, 102, 241, 0.1);
     border-color: var(--accent-primary);
     color: var(--text-primary);
+}
+
+.hist-dl-btn.already {
+    color: #22d3ee;
+    border-color: rgba(6, 182, 212, 0.3);
+}
+
+.hist-dl-btn.already:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: #06b6d4;
+    color: #fff;
 }
 
 .hist-extend-btn {

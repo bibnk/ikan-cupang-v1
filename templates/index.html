@@ -148,6 +148,16 @@
                         <input type="number" id="threads-input" value="500" min="1" max="1000">
                         <span class="input-desc">Semakin banyak = semakin cepat</span>
                     </div>
+                    <div class="form-group full-width" style="margin-top: 5px;">
+                        <label><span class="label-icon">🔄</span> Filter Already</label>
+                        <div style="display:flex; align-items:center; background:rgba(255,255,255,0.03); border:1px solid var(--border-color); border-radius:10px; padding:10px 14px;">
+                            <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13.5px; color:#cbd5e1; user-select:none; margin:0; width:100%;">
+                                <input type="checkbox" id="already-filter-toggle" checked style="accent-color:#06b6d4; width:18px; height:18px; cursor:pointer;">
+                                <span style="font-weight:600; color:#f1f5f9;">Aktifkan Filter Already</span>
+                                <span style="color:#94a3b8; font-size:12.5px;">&mdash; Otomatis lewati empass yang sudah pernah live sebelumnya</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="btn-row">
@@ -179,6 +189,11 @@
                         <div class="stat-icon">✅</div>
                         <div class="stat-info"><span class="stat-value" id="stat-live">0</span><span
                                 class="stat-label">Live</span></div>
+                    </div>
+                    <div class="stat-card already">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-info"><span class="stat-value" id="stat-already">0</span><span
+                                class="stat-label">Already</span></div>
                     </div>
                     <div class="stat-card noemail">
                         <div class="stat-icon">📭</div>
@@ -218,6 +233,8 @@
                 <div class="download-grid">
                     <a class="download-btn live disabled" data-type="live"><span class="dl-icon">✅</span><span
                             class="dl-label">Live</span><span class="dl-ext">.txt</span></a>
+                    <a class="download-btn already disabled" data-type="already"><span class="dl-icon">🔄</span><span
+                            class="dl-label">Already</span><span class="dl-ext">.txt</span></a>
                     <a class="download-btn noemail disabled" data-type="noemail"><span class="dl-icon">📭</span><span
                             class="dl-label">No Email</span><span class="dl-ext">.txt</span></a>
                     <a class="download-btn die disabled" data-type="die"><span class="dl-icon">💀</span><span
