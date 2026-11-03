@@ -250,7 +250,7 @@
 
         try {
             var useAlreadyToggle = document.getElementById("already-filter-toggle");
-            var useAlreadyVal = useAlreadyToggle ? useAlreadyToggle.checked : true;
+            var useAlreadyVal = useAlreadyToggle ? useAlreadyToggle.checked : false;
 
             var res = await fetch(APP_BASE+"/api/check", {
                 method: "POST",
