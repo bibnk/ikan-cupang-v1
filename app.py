@@ -105,8 +105,15 @@ def login_required(f):
         if not session.get("authenticated"):
             if request.is_json or request.path.startswith("/api/"):
                 return jsonify({"error": "Unauthorized"}), 401
-            target_url = request.full_path if request.query_string else request.path
-            return redirect(url_for("login_page", next=target_url))
+            if request.query_string:
+                target_url = request.full_path
+            elif request.path and request.path != "/":
+                target_url = request.path
+            else:
+                target_url = None
+            if target_url:
+                return redirect(url_for("login_page", next=target_url))
+            return redirect(url_for("login_page"))
         return f(*args, **kwargs)
     return decorated
 
@@ -117,8 +124,15 @@ def monitor_required(f):
         if not session.get("authenticated"):
             if request.is_json or request.path.startswith("/api/"):
                 return jsonify({"error": "Unauthorized"}), 401
-            target_url = request.full_path if request.query_string else request.path
-            return redirect(url_for("login_page", next=target_url))
+            if request.query_string:
+                target_url = request.full_path
+            elif request.path and request.path != "/":
+                target_url = request.path
+            else:
+                target_url = None
+            if target_url:
+                return redirect(url_for("login_page", next=target_url))
+            return redirect(url_for("login_page"))
         if not (session.get("can_monitor") or session.get("is_admin")):
             if request.is_json or request.path.startswith("/api/"):
                 return jsonify({"error": "Forbidden"}), 403
@@ -194,9 +208,20 @@ def login_page():
             session["can_monitor"] = is_adm
             session["code_hash"] = code_entry["code_hash"]
             session["user_label"] = code_entry.get("label", "user")
-            next_url = request.args.get("next") or request.form.get("next")
-            if next_url and next_url.startswith("/") and not next_url.startswith("//"):
-                return redirect(next_url)
+
+            next_url = (request.args.get("next") or request.form.get("next") or "").strip()
+            prefix = (request.script_root or "").rstrip("/")
+
+            if next_url and next_url not in ["/", ""]:
+                # Prepend prefix if not present
+                if prefix and not next_url.startswith(prefix + "/") and next_url != prefix:
+                    if next_url.startswith("/"):
+                        next_url = prefix + next_url
+                    else:
+                        next_url = prefix + "/" + next_url
+                if next_url.startswith("/") and not next_url.startswith("//"):
+                    return redirect(next_url)
+
             return redirect(url_for("index"))
         return render_template("login.html", error="Kode akses salah!")
     return render_template("login.html", error=None)

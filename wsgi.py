@@ -9,7 +9,7 @@ import os
 
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from werkzeug.exceptions import NotFound
-from flask import Flask
+from flask import Flask, redirect
 
 from app import app as _tool_app  # the real application (login-gated)
 
@@ -59,6 +59,21 @@ def public_home():
 @public_app.route("/health")
 def public_health():
     return {"ok": True}
+
+
+@public_app.route("/login")
+def public_login():
+    return redirect(MOUNT + "/login")
+
+
+@public_app.route("/logout")
+def public_logout():
+    return redirect(MOUNT + "/login")
+
+
+@public_app.route(MOUNT)
+def public_mount_redirect():
+    return redirect(MOUNT + "/")
 
 
 # Everything not under the secret mount is served by the public app.
