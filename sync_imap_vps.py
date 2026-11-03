@@ -260,13 +260,26 @@ def push_node_data(node, master_configs, master_unusable):
 
         sftp.close()
 
-        # Permissions and service restart
+        # Permissions, hot-reload, and safe conditional restart
         fix_cmd = """
         if id imapchecker >/dev/null 2>&1; then
             chown -R imapchecker:imapchecker /opt/pmj/imap /opt/imap-checker 2>/dev/null || true
+            chmod 664 /opt/pmj/imap/*.json /opt/pmj/imap/*.txt /opt/imap-checker/*.json /opt/imap-checker/*.txt 2>/dev/null || true
         fi
-        if systemctl is-active --quiet imap-checker 2>/dev/null; then
-            systemctl restart imap-checker
+        
+        # 1. Hot reload in-memory configs via internal API (zero downtime, zero thread drop)
+        curl -s -X POST http://127.0.0.1:5000/sbb/api/reload-configs >/dev/null 2>&1 || true
+
+        # 2. Check if any checker job is actively running
+        IS_BUSY=$(curl -s http://127.0.0.1:5000/sbb/api/is-busy 2>/dev/null | grep -o '"busy":true' || true)
+
+        # 3. Only restart systemctl if NO jobs are running
+        if [ -z "$IS_BUSY" ]; then
+            if systemctl is-active --quiet imap-checker 2>/dev/null; then
+                systemctl restart imap-checker 2>/dev/null || true
+            fi
+        else
+            echo "PROTECTED: Job is currently running on this runner. Configs hot-reloaded into memory without restarting service!"
         fi
         """
         ssh.exec_command(fix_cmd)

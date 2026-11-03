@@ -979,6 +979,27 @@ def resolve_unreg_job(job_id):
     })
 
 
+@app.route("/api/is-busy", methods=["GET"])
+def api_is_busy():
+    running_jobs = []
+    for jid, jdata in jobs.items():
+        checker = jdata.get("checker")
+        if checker:
+            try:
+                if checker.get_progress().get("status") == "running":
+                    running_jobs.append(jid)
+            except Exception:
+                pass
+    return jsonify({"busy": len(running_jobs) > 0, "running_jobs": running_jobs})
+
+
+@app.route("/api/reload-configs", methods=["POST"])
+def api_reload_configs():
+    from imap_config import reload_configs
+    cnt = reload_configs()
+    return jsonify({"ok": True, "domains_loaded": cnt})
+
+
 @app.route("/api/resolve-unreg-bg/<job_id>", methods=["POST"])
 @login_required
 def resolve_unreg_bg(job_id):

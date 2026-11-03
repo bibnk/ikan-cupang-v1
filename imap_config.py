@@ -24,40 +24,58 @@ IMAP_UNUSABLE_PATH = os.path.join(IMAP_DB_DIR, "imap_unusable.json")
 # Load unusable / dead / oauth domains (cegah double work cek berulang)
 DEFAULT_IMAP_UNUSABLE = set()
 _local_unusable_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imap_unusable.json")
-for _up in [IMAP_UNUSABLE_PATH, _local_unusable_path]:
-    if os.path.exists(_up):
+_local_cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imap_config.json")
+DEFAULT_IMAP_CONFIG = {}
+
+
+def reload_configs():
+    """Hot-reload IMAP configs and unusable domains into memory without process restart."""
+    global DEFAULT_IMAP_UNUSABLE, DEFAULT_IMAP_CONFIG
+    unusable = set()
+    for _up in [IMAP_UNUSABLE_PATH, _local_unusable_path]:
+        if os.path.exists(_up):
+            try:
+                with open(_up, "r", encoding="utf-8") as _f:
+                    _raw = json.load(_f)
+                    if isinstance(_raw, list):
+                        unusable.update(_raw)
+                    elif isinstance(_raw, dict):
+                        unusable.update(_raw.keys())
+            except Exception:
+                pass
+    DEFAULT_IMAP_UNUSABLE.clear()
+    DEFAULT_IMAP_UNUSABLE.update(unusable)
+
+    cfg = {}
+    if os.path.exists(IMAP_CONFIG_PATH):
         try:
-            with open(_up, "r", encoding="utf-8") as _f:
-                _raw = json.load(_f)
-                if isinstance(_raw, list):
-                    DEFAULT_IMAP_UNUSABLE.update(_raw)
-                elif isinstance(_raw, dict):
-                    DEFAULT_IMAP_UNUSABLE.update(_raw.keys())
+            with open(IMAP_CONFIG_PATH, "r", encoding="utf-8") as _f:
+                cfg = json.load(_f)
+        except Exception:
+            cfg = {}
+
+    if not cfg and os.path.exists(_local_cfg_path):
+        try:
+            with open(_local_cfg_path, "r", encoding="utf-8") as _f:
+                cfg = json.load(_f)
+            if cfg and os.path.isdir(IMAP_DB_DIR) and IMAP_CONFIG_PATH != _local_cfg_path:
+                try:
+                    with open(IMAP_CONFIG_PATH, "w", encoding="utf-8") as _f:
+                        json.dump(cfg, _f, indent=2)
+                except Exception:
+                    pass
         except Exception:
             pass
 
-# Load config: prioritaskan central database, fallback ke local repo jika kosong
-DEFAULT_IMAP_CONFIG = {}
-if os.path.exists(IMAP_CONFIG_PATH):
-    try:
-        with open(IMAP_CONFIG_PATH, "r", encoding="utf-8") as _f:
-            DEFAULT_IMAP_CONFIG = json.load(_f)
-    except Exception:
-        DEFAULT_IMAP_CONFIG = {}
+    if cfg:
+        DEFAULT_IMAP_CONFIG.clear()
+        DEFAULT_IMAP_CONFIG.update(cfg)
 
-_local_cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "imap_config.json")
-if not DEFAULT_IMAP_CONFIG and os.path.exists(_local_cfg_path):
-    try:
-        with open(_local_cfg_path, "r", encoding="utf-8") as _f:
-            DEFAULT_IMAP_CONFIG = json.load(_f)
-        if DEFAULT_IMAP_CONFIG and os.path.isdir(IMAP_DB_DIR) and IMAP_CONFIG_PATH != _local_cfg_path:
-            try:
-                with open(IMAP_CONFIG_PATH, "w", encoding="utf-8") as _f:
-                    json.dump(DEFAULT_IMAP_CONFIG, _f, indent=2)
-            except Exception:
-                pass
-    except Exception:
-        pass
+    return len(DEFAULT_IMAP_CONFIG)
+
+
+# Initial load at startup
+reload_configs()
 
 # Country-code TLDs yang punya 2 bagian (ne.jp, co.uk, com.br, dll)
 _CC_TLDS = {
