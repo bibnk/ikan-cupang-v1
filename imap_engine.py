@@ -41,43 +41,69 @@ ALREADY_FILE_CANDIDATES = [
 ]
 
 def get_already_path():
-    for p in ALREADY_FILE_CANDIDATES:
+    candidates = [
+        "/opt/pmj/imap/already_accounts.txt",
+        "/opt/imap-checker/already_accounts.txt",
+        os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap", "already_accounts.txt"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "already_accounts.txt"),
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    for p in candidates:
         pdir = os.path.dirname(p)
         if os.path.exists(pdir):
             return p
-    return ALREADY_FILE_CANDIDATES[-1]
+    return candidates[-1]
 
 def load_already_accounts() -> set:
-    path = get_already_path()
+    candidates = [
+        "/opt/pmj/imap/already_accounts.txt",
+        "/opt/imap-checker/already_accounts.txt",
+        os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap", "already_accounts.txt"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "already_accounts.txt"),
+    ]
     res = set()
-    if os.path.exists(path):
-        try:
-            with open(path, "r", encoding="utf-8", errors="replace") as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith("#"):
-                        if ":" in line:
-                            em, pw = line.split(":", 1)
-                            res.add(f"{em.strip().lower()}:{pw.strip()}")
-                        else:
-                            res.add(line.lower())
-        except Exception:
-            pass
+    for path in candidates:
+        if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8", errors="replace") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#"):
+                            if ":" in line:
+                                em, pw = line.split(":", 1)
+                                res.add(f"{em.strip().lower()}:{pw.strip()}")
+                            else:
+                                res.add(line.lower())
+                if res:
+                    break
+            except Exception:
+                pass
     return res
 
 _ALREADY_GLOBAL_LOCK = threading.Lock()
 
 def record_live_to_already(email_addr: str, password: str):
-    """Save verified live combo to global already_accounts.txt."""
-    path = get_already_path()
-    line = f"{email_addr.strip().lower()}:{password.strip()}"
+    """Save verified live combo to global already_accounts.txt across all locations."""
+    line = f"{email_addr.strip().lower()}:{password.strip()}\n"
+    targets = [
+        "/opt/pmj/imap/already_accounts.txt",
+        "/opt/imap-checker/already_accounts.txt",
+        os.path.join(os.path.expanduser("~"), "Desktop", "PMJ", "imap", "already_accounts.txt"),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "already_accounts.txt"),
+    ]
     with _ALREADY_GLOBAL_LOCK:
-        try:
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-            with open(path, "a", encoding="utf-8") as f:
-                f.write(line + "\n")
-        except Exception:
-            pass
+        for t in targets:
+            try:
+                if os.path.exists(t):
+                    with open(t, "a", encoding="utf-8") as f:
+                        f.write(line)
+                elif os.path.exists(os.path.dirname(t)):
+                    with open(t, "a", encoding="utf-8") as f:
+                        f.write(line)
+            except Exception:
+                pass
 
 # Skip-domains file (project root) — user-editable list of substrings
 # matched against email domain. Loaded per-job in ImapChecker.__init__.
