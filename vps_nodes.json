@@ -26,5 +26,12 @@
     "port": 22,
     "user": "root",
     "pass": "SRC*6ha&!$(KD!4+"
+  },
+  {
+    "name": "VPS-63 (Worker)",
+    "host": "165.245.143.63",
+    "port": 22,
+    "user": "root",
+    "pass": "Jembut!23Je"
   }
 ]
